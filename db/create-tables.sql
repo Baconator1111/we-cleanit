@@ -59,6 +59,6 @@ create table promotions (
     promotion_id serial primary key,
     promotion_name text,
     discount int,
-    end_date text,
+    end_date date,
     affecting text
 );

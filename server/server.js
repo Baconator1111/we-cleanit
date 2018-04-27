@@ -8,6 +8,8 @@ const express = require('express'),
     socket = require('socket.io'),
     http = require('http'),
     bodyparser = require('body-parser'),
+    initializeCtrl = require('./controllers/initializeCtrl'),
+    servicesCtrl = require('./controllers/servicesCtrl'),
     app = express(),
     { SERVER_PORT, SESSION_SECRET, DOMAIN, CLIENT_ID, CLIENT_SECRET, CALLBACK_URL, DB_CONNECTION, LOGIN, LOGOUT } = process.env
 
@@ -72,6 +74,26 @@ app.get('/logout', (req, res) => {
     req.logOut()
     res.redirect(LOGOUT)
 })
+
+// api requests
+
+app.get('/api/commercial', initializeCtrl.getCommercialRequests)
+app.get('/api/appointments', initializeCtrl.getAppointments)
+app.get('/api/open-times', initializeCtrl.getOpenTimes)
+
+app.get('/api/allServices', servicesCtrl.getServices)
+
+app.put('/api/admin/services/carpet', servicesCtrl.updateCarpetPrice)
+app.put('/api/admin/services/grout', servicesCtrl.updateGroutPrice)
+
+app.post('/api/admin/services/upholstery', servicesCtrl.addUpholstery)
+app.put('/api/admin/services/upholstery', servicesCtrl.updateUpholstery)
+app.delete('/api/admin/services/upholstery', servicesCtrl.deleteUpholstery)
+
+app.post('/api/admin/services/extras', servicesCtrl.addExtrasServices)
+app.delete('/api/admin/services/extras', servicesCtrl.deleteExtrasServices)
+
+app.post('/api/admin/services/promotion', servicesCtrl.addPromotion)
 
 // Socket connections
 let connections = []
