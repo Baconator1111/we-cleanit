@@ -1,0 +1,31 @@
+.createPostBtn {
+    background: #3D3D3D;
+    padding: 8px;
+    border: solid 1px #E8E8E8;
+    color: #E8E8E8;
+    border-radius: 3px;
+    margin-bottom: 20px;
+}
+
+.createPostBtn:focus {
+    outline: 0;
+}
+
+.createPostBtn:hover {
+    background: #222222;
+}
+
+.commentsBtn {
+    background: none;
+    border: none;
+    color: #565555;
+}
+
+.commentsBtn:focus {
+    outline: 0;
+}
+
+.commentsBtn:hover {
+    color: #E8E8E8;
+    outline: 0;
+}

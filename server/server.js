@@ -90,8 +90,12 @@ app.post('/api/admin/services/upholstery', servicesCtrl.addUpholstery)
 app.put('/api/admin/services/upholstery', servicesCtrl.updateUpholstery)
 app.delete('/api/admin/services/upholstery', servicesCtrl.deleteUpholstery)
 
-app.post('/api/admin/services/extras', servicesCtrl.addExtrasServices)
-app.delete('/api/admin/services/extras', servicesCtrl.deleteExtrasServices)
+app.post('/api/admin/services/extras', function (req, res) {
+    servicesCtrl.addExtrasServices
+})
+app.delete('/api/admin/services/extras', function (req, res) {
+    servicesCtrl.deleteExtrasServices
+})
 
 app.post('/api/admin/services/promotion', servicesCtrl.addPromotion)
 
@@ -119,9 +123,9 @@ io.on('connection', function (socket) {
             messages = [];
         }
     })
-    // on 'appointment' inserts appointment record and sends current: open slots and appointments
+    // on 'appointment' inserts appointment record, deletes the used time slots (takes in the appointment peramiters and an aaray of the slot ids) and then sends current: open slots and appointments
 
-    socket.on('make appointment', function (data) {
+    socket.on('make appointment', async function (data) {
         const db = app.get('db'),
             { client_name,
                 client_address,
@@ -131,8 +135,9 @@ io.on('connection', function (socket) {
                 residential_extras,
                 start_time,
                 end_time,
-                clean_time } = data
-        db.create_appointment([client_name,
+                clean_time,
+                timesToDelete } = data
+        const appointments = await db.create_appointment([client_name,
             client_address,
             residential_sqft_carpet,
             residential_sqft_grout,
@@ -141,16 +146,17 @@ io.on('connection', function (socket) {
             start_time,
             end_time,
             clean_time])
-            .then(appointments => {
-                io.sockets.emit('get appointments', appointments)
-                db.get_open_times()
-                    .then(times => {
-                        io.sockets.emit('get open times', times)
-                    })
-            })
+
+        await sockets.emit('get appointments', appointments)
+        for (let i = 0; i < timesToDelete.length; i++) {
+            await db.delete_open_times(timesToDelete[i])
+        }
+        const times = await db.get_open_times()
+        await sockets.emit('get open times', times)
+
     })
 
-    socket.on('make commercial request', function (data) {
+    socket.on('make commercial request', async function (data) {
         const db = app.get('db'),
             { company_name,
                 company_address,
@@ -159,7 +165,7 @@ io.on('connection', function (socket) {
                 company_upholstery,
                 company_extras,
                 frequency } = data
-        db.create_commercial_request([company_name,
+        const commercialRequest = await db.create_commercial_request([company_name,
             company_address,
             company_sqft_carpet,
             company_sqft_grout,
@@ -167,9 +173,9 @@ io.on('connection', function (socket) {
             company_extras,
             start_time,
             frequency])
-            .then(commercialRequest => {
-                io.sockets.emit('get commercial request', commercialRequest)
-            })
+
+        await sockets.emit('get commercial request', commercialRequest)
+
     })
 
     // on 'open slots' inserts open slots record and sends current: open slots and appointments
@@ -181,14 +187,14 @@ io.on('connection', function (socket) {
         //logic to seperate the times into 2 hour intervals dates come as "year-mo-dy"
         /* loop over date adding one to the day of the date each time until 31 then set to one and up the month number until 12 then set to one
             each loop creates a start and end date of 1 hour each 
-
+    
             ex input {
                 startDate: "2018-04-23",
                 endDate: "2018-04-23",
                 startTime: "14:00",
                 endTime: "18:00"
             }
-
+    
             ex output [
                 {start: "Wed Apr 23 2018 14:00:00 GMT-0700 (PDT)", end: "Wed Apr 23 2018 15:00:00 GMT-0700 (PDT)"},
                 {start: "Wed Apr 23 2018 15:00:00 GMT-0700 (PDT)", end: "Wed Apr 23 2018 16:00:00 GMT-0700 (PDT)"},
@@ -223,7 +229,7 @@ io.on('connection', function (socket) {
             }
         } else if (updateType == 'remove') {
             const { timeId } = data
-            await db.delete_open_time(timeId)
+            await db.delete_open_times(timeId)
         }
 
         const currentOpenTimes = await db.get_open_times()
