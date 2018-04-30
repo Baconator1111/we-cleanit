@@ -12,13 +12,11 @@ export default store;
 
 store.subscribe(() => {
   saveState({
-    storiesArray: store.getState().storiesArray,
-    currentStoryOrig: store.getState().currentStoryOrig,
-    currentEventOrig: store.getState().currentEventOrig,
-    currentStory: store.getState().currentStory,
-    currentEvent: store.getState().currentEvent,
-    currentEventIndex: store.getState().currentEventIndex,
-    importedMedia: store.getState().importedMedia,
-    user: store.getState().user
+    contactInfo: store.getState().contactInfo,
+    sqftCarpet: store.getState().sqftCarpet,
+    sqftGrout: store.getState().sqftGrout,
+    upholstery: store.getState().upholstery,
+    otherServices: store.getState().otherServices,
+    frequency: store.getState().frequency
   });
 });
