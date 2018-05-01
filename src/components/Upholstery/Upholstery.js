@@ -61,7 +61,7 @@ class Upholstery extends Component {
                     <div key={i} >
                         <h3>{upholstery.upholstery_name}</h3>
                         <h6>{upholstery.upholstery_price}</h6>
-                        <button onClick={()=> this.handleDeleteUpholstery(i)} >delete</button>
+                        <button onClick={() => this.handleDeleteUpholstery(i)} >delete</button>
                     </div>
                 )
             })
@@ -69,10 +69,10 @@ class Upholstery extends Component {
         console.log(this.state.selected)
         return (
             <div>
-                <select onChange={e=>this.handleChange(e.target.value)} name="upholstery">
+                <select onChange={e => this.handleChange(e.target.value)} name="upholstery">
                     {upholsteryOptions[0] ? upholsteryOptions : <option value={null}>none at the moment</option>}
                 </select>
-                {upholsterySelectedJSX? upholsterySelectedJSX: null}
+                {upholsterySelectedJSX ? upholsterySelectedJSX : null}
                 <button onClick={() => this.handleAddSelectedUpholstery()} >add</button>
             </div>
         )

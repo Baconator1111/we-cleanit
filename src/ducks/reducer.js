@@ -2,6 +2,8 @@ const initialState = {
     contactInfo: {},
     sqftCarpet: 0,
     sqftGrout: 0,
+    floorSectionsCarpet: [],
+    floorSectionsGrout: [],
     upholstery: [],
     otherServices: {},
     frequency: null
@@ -10,6 +12,8 @@ const initialState = {
 const UPDATE_CONTACT_INFO = 'UPDATE_CONTACT_INFO',
     UPDATE_SQFT_CARPET = 'UPDATE_SQFT_CARPET',
     UPDATE_SQFT_GROUT = 'UPDATE_SQFT_GROUT',
+    UPDATE_FLOOR_SECTIONS_CARPET = 'UPDATE_FLOOR_SECTIONS_CARPET',
+    UPDATE_FLOOR_SECTIONS_GROUT = 'UPDATE_FLOOR_SECTIONS_GROUT',
     UPDATE_UPHOLSTERY = 'UPDATE_UPHOLSTERY',
     UPDATE_OTHER_SERVICES = 'UPDATE_OTHER_SERVICES',
     UPDATE_FREQUENCY = 'UPDATE_FREQUENCY',
@@ -32,6 +36,18 @@ module.exports = {
         return {
             type: UPDATE_SQFT_GROUT,
             payload: sqftGrout
+        }
+    },
+    updateFloorSectionsCarpet: function (floorSectionsCarpet) {
+        return {
+            type: UPDATE_FLOOR_SECTIONS_CARPET,
+            payload: floorSectionsCarpet
+        }
+    },
+    updateFloorSectionsGrout: function (floorSectionsGrout) {
+        return {
+            type: UPDATE_FLOOR_SECTIONS_GROUT,
+            payload: floorSectionsGrout
         }
     },
     updateUpholstery: function (upholstery) {
@@ -67,6 +83,12 @@ module.exports = {
 
             case UPDATE_SQFT_GROUT:
                 return Object.assign({}, state, { sqftGrout: action.payload });
+
+            case UPDATE_FLOOR_SECTIONS_CARPET:
+                return Object.assign({}, state, { floorSectionsCarpet: action.payload });
+
+            case UPDATE_FLOOR_SECTIONS_GROUT:
+                return Object.assign({}, state, { floorSectionsGrout: action.payload });
 
             case UPDATE_UPHOLSTERY:
                 return Object.assign({}, state, { upholstery: action.payload });
