@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import { updateContactInfo } from '../../ducks/reducer'
+
 class ClientInfo extends Component {
     constructor(props) {
         super(props)

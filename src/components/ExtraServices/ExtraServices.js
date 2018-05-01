@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import axios from 'axios'
 
 import { updateOtherServices } from '../../ducks/reducer'
+
 class ExtraServices extends Component {
     constructor(props) {
         super(props)
