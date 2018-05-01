@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import axios from 'axios'
 
-import { updateUpholstery } from '../../ducks/reducer'
+import { updateUpholstery, clearState } from '../../ducks/reducer'
 
 class Upholstery extends Component {
     constructor(props) {
@@ -72,8 +72,9 @@ class Upholstery extends Component {
                 <select onChange={e => this.handleChange(e.target.value)} name="upholstery">
                     {upholsteryOptions[0] ? upholsteryOptions : <option value={null}>none at the moment</option>}
                 </select>
-                {upholsterySelectedJSX ? upholsterySelectedJSX : null}
                 <button onClick={() => this.handleAddSelectedUpholstery()} >add</button>
+                {upholsterySelectedJSX[0] ? upholsterySelectedJSX : null}
+                <button onClick={()=> this.props.clearState()} >Clear state</button>
             </div>
         )
     }
@@ -86,4 +87,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps, { updateUpholstery })(Upholstery)
+export default connect(mapStateToProps, { updateUpholstery, clearState })(Upholstery)

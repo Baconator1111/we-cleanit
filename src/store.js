@@ -12,9 +12,10 @@ export default store;
 
 store.subscribe(() => {
   saveState({
+    clientType: store.getState().clientType,
     contactInfo: store.getState().contactInfo,
-    sqftCarpet: store.getState().sqftCarpet,
-    sqftGrout: store.getState().sqftGrout,
+    floorSectionsCarpet: store.getState().floorSectionsCarpet,
+    floorSectionsGrout: store.getState().floorSectionsGrout,
     upholstery: store.getState().upholstery,
     otherServices: store.getState().otherServices,
     frequency: store.getState().frequency

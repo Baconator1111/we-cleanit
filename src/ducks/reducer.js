@@ -1,7 +1,6 @@
 const initialState = {
+    clientType: 'residential',
     contactInfo: {},
-    sqftCarpet: 0,
-    sqftGrout: 0,
     floorSectionsCarpet: [],
     floorSectionsGrout: [],
     upholstery: [],
@@ -9,9 +8,8 @@ const initialState = {
     frequency: null
 }
 
-const UPDATE_CONTACT_INFO = 'UPDATE_CONTACT_INFO',
-    UPDATE_SQFT_CARPET = 'UPDATE_SQFT_CARPET',
-    UPDATE_SQFT_GROUT = 'UPDATE_SQFT_GROUT',
+const UPDATE_CLIENT_TYPE = 'UPDATE_CLIENT_TYPE',
+    UPDATE_CONTACT_INFO = 'UPDATE_CONTACT_INFO',
     UPDATE_FLOOR_SECTIONS_CARPET = 'UPDATE_FLOOR_SECTIONS_CARPET',
     UPDATE_FLOOR_SECTIONS_GROUT = 'UPDATE_FLOOR_SECTIONS_GROUT',
     UPDATE_UPHOLSTERY = 'UPDATE_UPHOLSTERY',
@@ -20,22 +18,16 @@ const UPDATE_CONTACT_INFO = 'UPDATE_CONTACT_INFO',
     CLEAR_STATE = 'CLEAR_STATE'
 
 module.exports = {
+    updateClientType: function (clientType) {
+        return {
+            type: UPDATE_CLIENT_TYPE,
+            payload: clientType
+        }
+    },
     updateContactInfo: function (contactInfo) {
         return {
             type: UPDATE_CONTACT_INFO,
             payload: contactInfo
-        }
-    },
-    updateSQFTCarpet: function (sqftCarpet) {
-        return {
-            type: UPDATE_SQFT_CARPET,
-            payload: sqftCarpet
-        }
-    },
-    updateSQFTGrout: function (sqftGrout) {
-        return {
-            type: UPDATE_SQFT_GROUT,
-            payload: sqftGrout
         }
     },
     updateFloorSectionsCarpet: function (floorSectionsCarpet) {
@@ -75,14 +67,11 @@ module.exports = {
 
     reducer: function (state = initialState, action) {
         switch (action.type) {
-            case UPDATE_CONTACT_INFO:
+            case UPDATE_CLIENT_TYPE:
+                return Object.assign({}, state, { clientType: action.payload });
+            
+                case UPDATE_CONTACT_INFO:
                 return Object.assign({}, state, { contactInfo: action.payload });
-
-            case UPDATE_SQFT_CARPET:
-                return Object.assign({}, state, { sqftCarpet: action.payload });
-
-            case UPDATE_SQFT_GROUT:
-                return Object.assign({}, state, { sqftGrout: action.payload });
 
             case UPDATE_FLOOR_SECTIONS_CARPET:
                 return Object.assign({}, state, { floorSectionsCarpet: action.payload });
