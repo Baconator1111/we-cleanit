@@ -3,7 +3,7 @@ const initialState = {
     sqftCarpet: 0,
     sqftGrout: 0,
     upholstery: [],
-    otherServices: [],
+    otherServices: {},
     frequency: null
 }
 

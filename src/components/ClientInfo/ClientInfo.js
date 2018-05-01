@@ -16,14 +16,15 @@ class ClientInfo extends Component {
         this.handleInput = this.handleInput.bind(this)
     }
 
-    componentDidMount(){
+    componentDidMount() {
         console.log(this.props.contactInfo.clientName)
+        const { contactInfo } = this.props
         this.setState({
-            clientName: this.props.contactInfo.clientName,
-            clientAddress: this.props.contactInfo.clientAddress,
-            city: this.props.contactInfo.city,
-            clientPhone: this.props.contactInfo.clientPhone,
-            clientEmail: this.props.contactInfo.clientEmail
+            clientName: contactInfo.clientName,
+            clientAddress: contactInfo.clientAddress,
+            city: contactInfo.city,
+            clientPhone: contactInfo.clientPhone,
+            clientEmail: contactInfo.clientEmail
         })
     }
 
@@ -52,26 +53,26 @@ class ClientInfo extends Component {
                 <h3>Contact Information</h3>
                 <div>
                     <h6>Name:</h6>
-                    <input onChange={e=> this.handleInput('clientName', e.target.value)} type="text" value={this.state.clientName} />
+                    <input onChange={e => this.handleInput('clientName', e.target.value)} type="text" value={this.state.clientName} />
                 </div>
                 <div>
                     <h6>Address:</h6>
-                    <input onChange={e=> this.handleInput('clientAddress', e.target.value)} type="text" value={this.state.clientAddress} />
+                    <input onChange={e => this.handleInput('clientAddress', e.target.value)} type="text" value={this.state.clientAddress} />
                 </div>
                 <div>
                     <h6>City:</h6>
-                    <input onChange={e=> this.handleInput('city', e.target.value)} type="text" value={this.state.city} />
+                    <input onChange={e => this.handleInput('city', e.target.value)} type="text" value={this.state.city} />
                 </div>
                 <div>
                     <h6>Phone:</h6>
-                    <input onChange={e=> this.handleInput('clientPhone', e.target.value)} type="text" value={this.state.clientPhone} />
+                    <input onChange={e => this.handleInput('clientPhone', e.target.value)} type="text" value={this.state.clientPhone} />
                     <div>Your number will only be used to be contacted for this scheduled appointment. We do not share this information.</div>
                 </div>
                 <div>
                     <h6>Email:</h6>
-                    <input onChange={e=> this.handleInput('clientEmail', e.target.value)} type="text" value={this.state.clientEmail} />
+                    <input onChange={e => this.handleInput('clientEmail', e.target.value)} type="text" value={this.state.clientEmail} />
                 </div>
-                <button onClick={()=>this.handleSave()} >Save information</button>
+                <button onClick={() => this.handleSave()} >Save information</button>
             </div>
         )
     }

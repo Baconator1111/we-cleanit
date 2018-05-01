@@ -1,6 +1,6 @@
 {
   "name": "we-cleanit",
-  "proxy": "http://localhost:3066",
+  "proxy": "http://localhost:4020",
   "main": "server/server.js",
   "version": "0.1.0",
   "private": true,
