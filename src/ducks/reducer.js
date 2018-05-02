@@ -54,7 +54,7 @@ module.exports = {
             payload: otherServices
         }
     },
-    udpateFrequency: function (frequency) {
+    updateFrequency: function (frequency) {
         return {
             type: UPDATE_FREQUENCY,
             payload: frequency

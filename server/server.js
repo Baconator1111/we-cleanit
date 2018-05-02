@@ -190,7 +190,7 @@ io.on('connection', function (socket) {
     
             ex input {
                 startDate: "2018-04-23",
-                endDate: "2018-04-23",
+                endDate: "2018-04-25",
                 startTime: "14:00",
                 endTime: "18:00"
             }
