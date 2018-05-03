@@ -17,8 +17,7 @@ class ClientInfo extends Component {
         this.handleInput = this.handleInput.bind(this)
     }
 
-    componentDidMount() {
-        console.log(this.props.contactInfo.clientName)
+    UNSAFE_componentWillMount() {
         const { contactInfo } = this.props
         this.setState({
             clientName: contactInfo.clientName,
@@ -48,7 +47,6 @@ class ClientInfo extends Component {
     }
 
     render() {
-        console.log(this.state)
         return (
             <div>
                 <h3>Contact Information</h3>

@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import axios from 'axios'
 
 import { updateOtherServices } from '../../ducks/reducer'
 
@@ -21,10 +20,7 @@ class ExtraServices extends Component {
                 servicesSelected: otherServices.servicesSelected
             })
         } else {
-            axios.get('/api/allServices')
-                .then(({ data }) => {
-                    this.setState({ servicesOffered: data.extras })
-                })
+            this.setState({ servicesOffered: this.props.servicesInfo.extras })
         }
     }
 
@@ -43,7 +39,7 @@ class ExtraServices extends Component {
             servicesSelected: servicesSelected
         })
         this.props.updateOtherServices(this.state)
-        
+
     }
 
     handleDeselectExtra(service) {
@@ -61,7 +57,7 @@ class ExtraServices extends Component {
             servicesSelected: servicesSelected
         })
         this.props.updateOtherServices(this.state)
-        
+
     }
 
     render() {
@@ -102,6 +98,7 @@ class ExtraServices extends Component {
 
 function mapStateToProps(state) {
     return {
+        servicesInfo: state.servicesInfo,
         otherServices: state.otherServices
     }
 }

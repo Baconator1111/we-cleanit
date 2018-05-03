@@ -1,22 +1,24 @@
-import { createStore, applyMiddleware } from 'redux';
-import reduxPromiseMiddleware from 'redux-promise-middleware';
-import { composeWithDevTools } from 'redux-devtools-extension';
-import { reducer } from './ducks/reducer';
-import { loadState, saveState } from './localStorage';
+import { createStore, applyMiddleware } from 'redux'
+import reduxPromiseMiddleware from 'redux-promise-middleware'
+import { composeWithDevTools } from 'redux-devtools-extension'
+import { reducer } from './ducks/reducer'
+import { loadState, saveState } from './localStorage'
 
-const persistedState = loadState();
+const persistedState = loadState()
 
-let store = createStore( reducer, persistedState, composeWithDevTools(applyMiddleware(reduxPromiseMiddleware())));
+let store = createStore( reducer, persistedState, composeWithDevTools(applyMiddleware(reduxPromiseMiddleware())))
 
 export default store;
 
 store.subscribe(() => {
   saveState({
+    clientType: store.getState().clientType,
+    servicesInfo: store.getState().servicesInfo,
     contactInfo: store.getState().contactInfo,
-    sqftCarpet: store.getState().sqftCarpet,
-    sqftGrout: store.getState().sqftGrout,
+    floorSectionsCarpet: store.getState().floorSectionsCarpet,
+    floorSectionsGrout: store.getState().floorSectionsGrout,
     upholstery: store.getState().upholstery,
     otherServices: store.getState().otherServices,
     frequency: store.getState().frequency
-  });
-});
+  })
+})

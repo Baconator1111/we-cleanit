@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
+import logo from './logo.svg'
+import './App.css'
 
-import Upholstery from './components/Upholstery/Upholstery'
+import EstimateWizard from './views/EstimateWizard/EstimateWizard'
+
 class App extends Component {
   render() {
     return (
@@ -11,10 +12,10 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <Upholstery />
-
+        <EstimateWizard />
+        
       </div>
-    );
+    )
   }
 }
 
