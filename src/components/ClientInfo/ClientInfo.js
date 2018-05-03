@@ -18,7 +18,6 @@ class ClientInfo extends Component {
     }
 
     UNSAFE_componentWillMount() {
-        console.log(this.props.contactInfo.clientName)
         const { contactInfo } = this.props
         this.setState({
             clientName: contactInfo.clientName,
@@ -48,7 +47,6 @@ class ClientInfo extends Component {
     }
 
     render() {
-        console.log(this.state)
         return (
             <div>
                 <h3>Contact Information</h3>

@@ -36,7 +36,6 @@ class Upholstery extends Component {
     }
 
     handleDeleteUpholstery(index) {
-        console.log(index)
         let upholsterySelected = this.state.upholsterySelected
         upholsterySelected.splice(index, 1)
         this.setState({ upholsterySelected: upholsterySelected })
@@ -65,7 +64,6 @@ class Upholstery extends Component {
                 )
             })
         }
-        console.log(this.state.selected)
         return (
             <div>
                 <select onChange={e => this.handleChange(e.target.value)} name="upholstery">

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import logo from './logo.svg'
 import './App.css'
 
-import ResidentialWizard from './views/ResidentialWizard/ResidentialWizard'
+import EstimateWizard from './views/EstimateWizard/EstimateWizard'
 
 class App extends Component {
   render() {
@@ -12,7 +12,7 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <ResidentialWizard />
+        <EstimateWizard />
         
       </div>
     )

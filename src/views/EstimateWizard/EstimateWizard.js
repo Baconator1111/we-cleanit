@@ -11,7 +11,7 @@ import Upholstery from './../../components/Upholstery/Upholstery'
 import ExtraServices from './../../components/ExtraServices/ExtraServices'
 import Frequency from './../../components/Frequency/Frequency'
 
-class ResidentialWizard extends Component {
+class EstimateWizard extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -100,4 +100,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps, { getServices })(ResidentialWizard)
+export default connect(mapStateToProps, { getServices })(EstimateWizard)
