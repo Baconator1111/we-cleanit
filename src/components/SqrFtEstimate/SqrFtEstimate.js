@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import axios from 'axios'
 
 import { updateFloorSectionsCarpet, updateFloorSectionsGrout } from '../../ducks/reducer'
 
@@ -30,22 +29,19 @@ class SqrFtEstimate extends Component {
             })
         }
 
-        axios.get('/api/allServices')
-            .then(({ data }) => {
-                let carpetPrice = data.mainServices[0].carpet_price
-                let groutPrice = data.mainServices[0].grout_price
-                this.setState({
-                    carpetPrice: carpetPrice,
-                    groutPrice: groutPrice
-                })
-            })
+        let carpetPrice = this.props.servicesInfo.mainServices[0].carpet_price
+        let groutPrice = this.props.servicesInfo.mainServices[0].grout_price
+        this.setState({
+            carpetPrice: carpetPrice,
+            groutPrice: groutPrice
+        })
     }
 
     handleChange(key, input) {
         this.setState({ [key]: input })
     }
 
-    handleAddFloorSection() {
+    async handleAddFloorSection() {
         let section = {
             length: this.state.length,
             width: this.state.width
@@ -60,14 +56,16 @@ class SqrFtEstimate extends Component {
         })
 
         if (this.props.floorType === 'carpet') {
-            this.props.updateFloorSectionsCarpet(this.state.floorSections)
+            await this.props.updateFloorSectionsCarpet(this.state.floorSections)
         } else if (this.props.floorType === 'grout') {
-            this.props.updateFloorSectionsGrout(this.state.floorSections)
+            await this.props.updateFloorSectionsGrout(this.state.floorSections)
         }
+
+        this.props.calculateRunningTotal()
 
     }
 
-    handleDeleteFloorSection(index) {
+    async handleDeleteFloorSection(index) {
         let floorSections = this.state.floorSections
         floorSections.splice(index, 1)
         this.setState({
@@ -75,10 +73,11 @@ class SqrFtEstimate extends Component {
         })
 
         if (this.props.floorType === 'carpet') {
-            this.props.updateFloorSectionsCarpet(this.state.floorSections)
+            await this.props.updateFloorSectionsCarpet(this.state.floorSections)
         } else if (this.props.floorType === 'grout') {
-            this.props.updateFloorSectionsGrout(this.state.floorSections)
+            await this.props.updateFloorSectionsGrout(this.state.floorSections)
         }
+        this.props.calculateRunningTotal()
     }
 
     render() {
@@ -88,7 +87,7 @@ class SqrFtEstimate extends Component {
             addedFloorSectionsJSX = this.state.floorSections.map((floorSection, i) => {
                 return (
                     <div key={i} >
-                        <h3>{floorSection.width}ft by {floorSection.length}ft</h3>
+                        <h3>{floorSection.length}ft by {floorSection.width}ft</h3>
                         <button onClick={() => this.handleDeleteFloorSection(i)} >delete</button>
                     </div>
                 )
@@ -125,6 +124,7 @@ class SqrFtEstimate extends Component {
 function mapStateToProps(state) {
     return {
         clientType: state.clientType,
+        servicesInfo: state.servicesInfo,        
         floorSectionsCarpet: state.floorSectionsCarpet,
         floorSectionsGrout: state.floorSectionsGrout
     }

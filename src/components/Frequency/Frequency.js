@@ -18,6 +18,7 @@ class Frequency extends Component {
     async handleOption(option) {
         await this.setState({ frequency: option })
         this.props.updateFrequency(this.state.frequency)
+        this.props.calculateRunningTotal()
     }
 
     render() {

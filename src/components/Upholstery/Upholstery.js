@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import axios from 'axios'
 
 import { updateUpholstery, clearState } from '../../ducks/reducer'
 
@@ -19,10 +18,8 @@ class Upholstery extends Component {
         if (currentUpholstery[0]) {
             this.setState({ upholsterySelected: currentUpholstery })
         }
-        axios.get('/api/allServices')
-            .then(({ data }) => {
-                this.setState({ upholsteryOffered: data.upholstery })
-            })
+
+        this.setState({ upholsteryOffered: this.props.servicesInfo.upholstery })
     }
 
     handleChange(input) {
@@ -35,6 +32,7 @@ class Upholstery extends Component {
         this.setState({ upholsterySelected: upholsterySelected })
 
         this.props.updateUpholstery(this.state.upholsterySelected)
+        this.props.calculateRunningTotal()
     }
 
     handleDeleteUpholstery(index) {
@@ -44,6 +42,7 @@ class Upholstery extends Component {
         this.setState({ upholsterySelected: upholsterySelected })
 
         this.props.updateUpholstery(this.state.upholsterySelected)
+        this.props.calculateRunningTotal()
     }
 
     render() {
@@ -74,7 +73,7 @@ class Upholstery extends Component {
                 </select>
                 <button onClick={() => this.handleAddSelectedUpholstery()} >add</button>
                 {upholsterySelectedJSX[0] ? upholsterySelectedJSX : null}
-                <button onClick={()=> this.props.clearState()} >Clear state</button>
+                <button onClick={() => this.props.clearState()} >Clear state</button>
             </div>
         )
     }
@@ -83,6 +82,7 @@ class Upholstery extends Component {
 
 function mapStateToProps(state) {
     return {
+        servicesInfo: state.servicesInfo,                
         upholstery: state.upholstery
     }
 }

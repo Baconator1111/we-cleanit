@@ -13,6 +13,7 @@ export default store;
 store.subscribe(() => {
   saveState({
     clientType: store.getState().clientType,
+    servicesInfo: store.getState().servicesInfo,
     contactInfo: store.getState().contactInfo,
     floorSectionsCarpet: store.getState().floorSectionsCarpet,
     floorSectionsGrout: store.getState().floorSectionsGrout,

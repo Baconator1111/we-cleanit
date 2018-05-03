@@ -17,7 +17,7 @@ class ClientInfo extends Component {
         this.handleInput = this.handleInput.bind(this)
     }
 
-    componentDidMount() {
+    UNSAFE_componentWillMount() {
         console.log(this.props.contactInfo.clientName)
         const { contactInfo } = this.props
         this.setState({

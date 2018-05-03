@@ -1,5 +1,8 @@
+const axios = require('axios')
+
 const initialState = {
     clientType: 'residential',
+    servicesInfo: {},
     contactInfo: {},
     floorSectionsCarpet: [],
     floorSectionsGrout: [],
@@ -9,6 +12,7 @@ const initialState = {
 }
 
 const UPDATE_CLIENT_TYPE = 'UPDATE_CLIENT_TYPE',
+    GET_SERVICES = 'GET_SERVICES',
     UPDATE_CONTACT_INFO = 'UPDATE_CONTACT_INFO',
     UPDATE_FLOOR_SECTIONS_CARPET = 'UPDATE_FLOOR_SECTIONS_CARPET',
     UPDATE_FLOOR_SECTIONS_GROUT = 'UPDATE_FLOOR_SECTIONS_GROUT',
@@ -22,6 +26,13 @@ module.exports = {
         return {
             type: UPDATE_CLIENT_TYPE,
             payload: clientType
+        }
+    },
+    getServices: function () {
+        let servicesInfo = axios.get('/api/allServices').then( resp => resp.data )
+        return {
+            type: GET_SERVICES,
+            payload: servicesInfo
         }
     },
     updateContactInfo: function (contactInfo) {
@@ -69,8 +80,11 @@ module.exports = {
         switch (action.type) {
             case UPDATE_CLIENT_TYPE:
                 return Object.assign({}, state, { clientType: action.payload });
-            
-                case UPDATE_CONTACT_INFO:
+
+            case GET_SERVICES + '_FULFILLED':
+                return Object.assign({}, state, { servicesInfo: action.payload });
+
+            case UPDATE_CONTACT_INFO:
                 return Object.assign({}, state, { contactInfo: action.payload });
 
             case UPDATE_FLOOR_SECTIONS_CARPET:
