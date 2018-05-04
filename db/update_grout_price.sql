@@ -1,2 +1,2 @@
-update table services
+update services
 set grout_price = $1

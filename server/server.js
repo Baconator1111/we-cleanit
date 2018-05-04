@@ -83,19 +83,16 @@ app.get('/api/open-times', initializeCtrl.getOpenTimes)
 
 app.get('/api/allServices', servicesCtrl.getServices)
 
-app.put('/api/admin/services/carpet', servicesCtrl.updateCarpetPrice)
-app.put('/api/admin/services/grout', servicesCtrl.updateGroutPrice)
+app.put('/api/admin/services/carpetPrice', servicesCtrl.updateCarpetPrice)
+app.put('/api/admin/services/groutPrice', servicesCtrl.updateGroutPrice)
+app.put('/api/admin/services/floorTime', servicesCtrl.updateTTC)
 
 app.post('/api/admin/services/upholstery', servicesCtrl.addUpholstery)
 app.put('/api/admin/services/upholstery', servicesCtrl.updateUpholstery)
-app.delete('/api/admin/services/upholstery', servicesCtrl.deleteUpholstery)
+app.delete('/api/admin/services/upholstery/:upholstery_id', servicesCtrl.deleteUpholstery)
 
-app.post('/api/admin/services/extras', function (req, res) {
-    servicesCtrl.addExtrasServices
-})
-app.delete('/api/admin/services/extras', function (req, res) {
-    servicesCtrl.deleteExtrasServices
-})
+app.post('/api/admin/services/extras', servicesCtrl.addExtraServices)
+app.delete('/api/admin/services/extras/:extra_id', servicesCtrl.deleteExtraServices)
 
 app.post('/api/admin/services/promotion', servicesCtrl.addPromotion)
 
