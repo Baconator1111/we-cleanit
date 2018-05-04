@@ -57,6 +57,62 @@ class ManageServices extends Component {
         this.props.getServices()
     }
 
+    handleAddUpholsteryOpen() {
+        this.setState({ addUpholstery: true })
+    }
+
+    handleAddExtraOpen() {
+        this.setState({ addExtra: true })
+    }
+
+    async handleAddUpholstery() {
+        if (this.state.upholsteryName === '' || +this.state.upholsteryPrice === 0 || this.state.upholsteryTTC === 0) {
+            return null
+        } else {
+            let body = {
+                extra_name: this.state.upholsteryName,
+                extra_description: this.state.upholsteryPrice,
+                upholstery_ttc: this.state.upholsteryTTC
+            }
+
+            await axios.post('/api/admin/services/upholstery', body)
+            this.setState({ addUpholstery: false })
+            this.props.getServices()
+        }
+    }
+
+    handleCancelUpholstery() {
+        this.setState({
+            addUpholstery: false,
+            upholsteryName: '',
+            upholsteryPrice: 0,
+            upholsteryTTC: 0
+        })
+    }
+
+    async handleAddExtra() {
+        if (this.state.extraName === '' || this.state.extraDescription === '') {
+            return null
+        } else {
+            let body = {
+                upholstery_name: this.state.extraName,
+                upholstery_price: this.state.extraDescription
+            }
+
+            await axios.post('/api/admin/services/extras', body)
+            this.setState({ addExtra: false })
+            this.props.getServices()
+        }
+    }
+
+    handleCancelExtra() {
+        this.setState({
+            addExtra: false,
+            extraName: '',
+            extraDescription: '',
+        })
+    }
+
     render() {
         let upholsteryJSX
 
@@ -78,6 +134,37 @@ class ManageServices extends Component {
                     </div>
                 )
             })
+        }
+
+        let addUpholsteryJSX
+        if (this.state.addUpholstery === true) {
+            addUpholsteryJSX = (
+                <div>
+                    <h3>New Upholstery Piece</h3>
+                    <h4>Name:  <input type="text" value={this.state.upholsteryName} onChange={e => this.handleChange('upholsteryName', e.target.value)} /></h4>
+                    <h5>Price:  $<input type="number" min='0' value={this.state.upholsteryPrice} onChange={e => this.handleChange('upholsteryPrice', e.target.value)} /></h5>
+                    <h5>Time to Clean:  <input type="number" min='0' value={this.state.upholsteryTTC} onChange={e => this.handleChange('upholsteryTTC', e.target.value)} />minutes</h5>
+                    <button onClick={() => this.handleAddUpholstery()} >Submit</button>
+                    <button onClick={() => this.handleCancelUpholstery()} >Cancel</button>
+                </div>
+            )
+        } else {
+            addUpholsteryJSX = null
+        }
+
+        let addExtraJSX
+        if (this.state.addExtra === true) {
+            addExtraJSX = (
+                <div>
+                    <h3>New Extra Service</h3>
+                    <h4>Name:  <input type="text" value={this.state.extraName} onChange={e => this.handleChange('extraName', e.target.value)} /></h4>
+                    <h5>Description:  $<input type="text" value={this.state.extraDescription} onChange={e => this.handleChange('extraDescription', e.target.value)} /></h5>
+                    <button onClick={() => this.handleAddExtra()} >Submit</button>
+                    <button onClick={() => this.handleCancelExtra()} >Cancel</button>
+                </div>
+            )
+        } else {
+            addExtraJSX = null
         }
 
         return (
@@ -112,12 +199,14 @@ class ManageServices extends Component {
                 <ExpandableBox boxTitle='Upholstery' >
                     <h3>Upholstery</h3>
                     {upholsteryJSX}
-                    <button>Add Upholstery Piece</button>
+                    {addUpholsteryJSX}
+                    {this.state.addUpholstery === false ? <button onClick={() => this.handleAddUpholsteryOpen()} >Add Upholstery Piece</button> : null}
                 </ExpandableBox>
                 <ExpandableBox boxTitle='Other Services' >
                     <h3>Other Services</h3>
                     {otherServicesJSX}
-                    <button>Add Extra Service</button>
+                    {addExtraJSX}
+                    {this.state.addExtra === false ? <button onClick={() => this.handleAddExtraOpen()} >Add Extra Service</button> : null }
                 </ExpandableBox>
             </div>
         )
