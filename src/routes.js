@@ -4,6 +4,9 @@ import { Route, Switch } from 'react-router-dom'
 import HomeLanding from './views/HomeLanding/HomeLanding'
 import ServiceSelection from './views/ServiceSelection/ServiceSelection'
 import EstimateWizard from './views/EstimateWizard/EstimateWizard'
+import AdminLanding from './views/AdminLanding/AdminLanding'
+import AdminDash from './views/AdminDash/AdminDash'
+import ManageServices from './views/ManageServices/ManageServices'
 
 export default (
   <Switch> 
@@ -11,5 +14,8 @@ export default (
     <Route path = '/services-selection' component = {ServiceSelection}/>
     <Route path = '/residential-home-cleaning' component = {EstimateWizard}/>
     <Route path = '/commercial-home-cleaning' component = {EstimateWizard}/>
+    <Route exact path = '/admin' component = {AdminLanding}/>
+    <Route path = '/admin/dash' component = {AdminDash}/>
+    <Route path = '/admin/manage-services' component = {ManageServices}/>
   </Switch>
 )
