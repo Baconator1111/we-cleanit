@@ -25,8 +25,6 @@ class ManageServices extends Component {
     }
 
     async componentDidMount() {
-        await this.props.getServices()
-
         this.setState({
             carpetPrice: this.props.servicesInfo.mainServices[0].carpet_price,
             groutPrice: this.props.servicesInfo.mainServices[0].grout_price,
