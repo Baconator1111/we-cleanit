@@ -1,7 +1,7 @@
 const axios = require('axios')
 
 const initialState = {
-    clientType: 'residential',
+    clientType: '',
     servicesInfo: {},
     contactInfo: {},
     floorSectionsCarpet: [],

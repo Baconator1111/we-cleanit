@@ -16,20 +16,22 @@ class EstimateWizard extends Component {
         super(props)
         this.state = {
             runningTotal: 0,
+            timeToClean: 0,
             carpetPrice: 0,
-            groutPrice: 0
+            groutPrice: 0,
+            floorTime: 0
         }
 
         this.calculateRunningTotal = this.calculateRunningTotal.bind(this)
     }
 
-    componentDidMount() {
-        this.props.getServices()
-        let carpetPrice = this.props.servicesInfo.mainServices[0].carpet_price
-        let groutPrice = this.props.servicesInfo.mainServices[0].grout_price
+    async componentDidMount() {
+        await this.props.getServices()
+        
         this.setState({
-            carpetPrice: carpetPrice,
-            groutPrice: groutPrice
+            carpetPrice: this.props.servicesInfo.mainServices[0].carpet_price,
+            groutPrice: this.props.servicesInfo.mainServices[0].grout_price,
+            floorTime: this.props.servicesInfo.mainServices[0].floor_ttc
         })
         this.calculateRunningTotal()
 
@@ -50,6 +52,7 @@ class EstimateWizard extends Component {
 
     calculateRunningTotal() {
         let runningTotal = 0
+        let timeToClean = 0
 
         // calculate Carpet and Grout prices
         let totalSqrFtCarpet = 0
@@ -65,12 +68,19 @@ class EstimateWizard extends Component {
         runningTotal += totalSqrFtCarpet * this.state.carpetPrice / 100
         runningTotal += totalSqrFtGrout * this.state.groutPrice / 100
 
+        let totalFootage = totalSqrFtCarpet + totalSqrFtGrout
+        timeToClean += totalFootage * this.state.floorTime / 60000
+
         // add upholstery pieces
         this.props.upholstery.forEach(upholstery => {
             runningTotal += upholstery.upholstery_price
+            timeToClean += upholstery.upholstery_ttc
         })
 
-        this.setState({ runningTotal: runningTotal })
+        this.setState({ 
+            runningTotal: runningTotal,
+            timeToClean: timeToClean
+        })
     }
 
     render() {
@@ -84,6 +94,7 @@ class EstimateWizard extends Component {
                 {this.props.clientType === 'commercial' ? <ExpandableBox boxTitle='Frequency' ><Frequency calculateRunningTotal={this.calculateRunningTotal} /></ExpandableBox> : null}
 
                 <h2>Running Total ${this.state.runningTotal}</h2>
+                <h2>Estimated Cleaing Time {this.state.timeToClean} min</h2>
             </div>
         )
     }

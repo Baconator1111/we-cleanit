@@ -23,29 +23,39 @@ module.exports = {
         // takes in number param off body
 
         const db = req.app.get('db'),
-            { price } = req.body
+            { carpetPrice } = req.body
 
-        db.update_carpet_price(price)
-            .then(() => res.send(200).send('price updated'))
+        db.update_carpet_price(carpetPrice)
+            .then(() => res.status(200).send('price updated'))
     },
     updateGroutPrice: (req, res) => {
         //updates square footage price of the grout service
         // takes in number param off body
 
         const db = req.app.get('db'),
-            { price } = req.body
+            { groutPrice } = req.body
 
-        db.update_grout_price(price)
-            .then(() => res.send(200).send('price updated'))
+        db.update_grout_price(groutPrice)
+            .then(() => res.status(200).send('price updated'))
+    },
+    updateTTC: (req, res) => {
+        //updates square footage Time to Clean of the grout service
+        // takes in number param off body
+
+        const db = req.app.get('db'),
+            { floorTime } = req.body
+
+        db.update_TTC(floorTime)
+            .then(() => res.status(200).send('Time to Clean updated'))
     },
     addUpholstery: (req, res) => {
         // add an upholstery piece 
         // takes in upholstery object: upholstery_name, upholstery_price 
 
         const db = req.app.get('db'),
-            { upholstery_name, upholstery_price } = req.body
+            { upholstery_name, upholstery_price, upholstery_ttc } = req.body
 
-        db.create_upholstery([upholstery_name, upholstery_price])
+        db.create_upholstery([upholstery_name, upholstery_price, upholstery_ttc])
             .then(() => res.status(200).send('piece added'))
     },
     updateUpholstery: (req, res) => {
@@ -53,9 +63,9 @@ module.exports = {
         // takes in upholster object: upholstery_id, upholstery_name, upholstery_price
 
         const db = req.app.get('db'),
-            { upholstery_id, upholstery_name, upholstery_price } = req.body
+            { upholstery_id, upholstery_name, upholstery_price, upholstery_ttc } = req.body
 
-        db.update_upholstery([upholstery_id, upholstery_name, upholstery_price])
+        db.update_upholstery([upholstery_id, upholstery_name, upholstery_price, upholstery_ttc])
             .then(() => res.status(200).send('piece update'))
     },
     deleteUpholstery: (req, res) => {
@@ -63,7 +73,7 @@ module.exports = {
         // takes in upholstery id num
 
         const db = req.app.get('db'),
-            { upholstery_id } = req.body
+            { upholstery_id } = req.params
 
         db.delete_upholstery(upholstery_id)
             .then(() => res.status(200).send('piece deleted'))
@@ -83,7 +93,7 @@ module.exports = {
         // takes in extra service id num
 
         const db = req.app.get('db'),
-            { extra_id } = req.body
+            { extra_id } = req.params
 
         db.delete_extra(extra_id)
             .then(() => res.status(200).send('extra service deleted'))

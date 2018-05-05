@@ -40,13 +40,17 @@ create table commercial (
 create table services (
     service_id serial primary key,
     carpet_price int,
-    grout_price int
+    grout_price int,
+    /* time in miliseconds */
+    floor_ttc int
 );
 
 create table upholstery (
     upholstery_id serial primary key,
     upholstery_name text,
-    upholstery_price int
+    upholstery_price int,
+    /* time in minutes */
+    upholstery_ttc int
 );
 
 create table extra_services (
