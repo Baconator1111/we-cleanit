@@ -11,7 +11,32 @@ import Upholstery from './../../components/Upholstery/Upholstery'
 import ExtraServices from './../../components/ExtraServices/ExtraServices'
 import Frequency from './../../components/Frequency/Frequency'
 
-class EstimateWizard extends Component {
+import PropTypes from 'prop-types';
+import { withStyles } from 'material-ui/styles';
+import ExpansionPanel, {
+  ExpansionPanelSummary,
+  ExpansionPanelDetails,
+} from 'material-ui/ExpansionPanel';
+import Typography from 'material-ui/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
+
+//
+
+    // <div>
+    // <ExpandableBox boxTitle='Contact Information' ><ClientInfo /></ExpandableBox>
+    // <ExpandableBox boxTitle='Carpet Cleaning Estimate' ><SqrFtEstimate calculateRunningTotal={this.calculateRunningTotal} floorType='carpet' /></ExpandableBox>
+    // <ExpandableBox boxTitle='Grout and Tile Cleaning Estimate' ></ExpandableBox>
+    // <ExpandableBox boxTitle='Upholstery Services' ><Upholstery calculateRunningTotal={this.calculateRunningTotal} /></ExpandableBox>
+    // {this.props.clientType === 'residential' ? <ExpandableBox boxTitle='Extra Services' ><ExtraServices /></ExpandableBox> : null}
+    // {this.props.clientType === 'commercial' ? <ExpandableBox boxTitle='Frequency' ><Frequency calculateRunningTotal={this.calculateRunningTotal} /></ExpandableBox> : null}
+    // <h2>Running Total ${this.state.runningTotal}</h2>
+    // <h2>Estimated Cleaing Time {this.state.timeToClean} min</h2>
+    // </div>
+
+
+
+  class EstimateWizard extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -27,7 +52,7 @@ class EstimateWizard extends Component {
 
     async componentDidMount() {
         await this.props.getServices()
-        
+
         this.setState({
             carpetPrice: this.props.servicesInfo.mainServices[0].carpet_price,
             groutPrice: this.props.servicesInfo.mainServices[0].grout_price,
@@ -77,28 +102,107 @@ class EstimateWizard extends Component {
             timeToClean += upholstery.upholstery_ttc
         })
 
-        this.setState({ 
+        this.setState({
             runningTotal: runningTotal,
-            timeToClean: timeToClean
+            timeToClean: timeToClean,
+            expanded: null
         })
     }
 
-    render() {
-        return (
-            <div>
-                <ExpandableBox boxTitle='Contact Information' ><ClientInfo /></ExpandableBox>
-                <ExpandableBox boxTitle='Carpet Cleaning Estimate' ><SqrFtEstimate calculateRunningTotal={this.calculateRunningTotal} floorType='carpet' /></ExpandableBox>
-                <ExpandableBox boxTitle='Grout and Tile Cleaning Estimate' ><SqrFtEstimate calculateRunningTotal={this.calculateRunningTotal} floorType='grout' /></ExpandableBox>
-                <ExpandableBox boxTitle='Upholstery Services' ><Upholstery calculateRunningTotal={this.calculateRunningTotal} /></ExpandableBox>
-                {this.props.clientType === 'residential' ? <ExpandableBox boxTitle='Extra Services' ><ExtraServices /></ExpandableBox> : null}
-                {this.props.clientType === 'commercial' ? <ExpandableBox boxTitle='Frequency' ><Frequency calculateRunningTotal={this.calculateRunningTotal} /></ExpandableBox> : null}
+    handleChange = panel => (event, expanded) => {
+      this.setState({
+        expanded: expanded ? panel : false,
+      });
+    };
 
-                <h2>Running Total ${this.state.runningTotal}</h2>
-                <h2>Estimated Cleaing Time {this.state.timeToClean} min</h2>
-            </div>
-        )
+    render() {
+
+      const { classes } = this.props;
+      const { expanded } = this.state;
+
+      return (
+        <div className={classes.root}>
+          <ExpansionPanel expanded={expanded === 'panel1'} onChange={this.handleChange('panel1')}>
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography className={classes.heading}></Typography>
+              <Typography className={classes.secondaryHeading}>Contact Information</Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+                <ClientInfo />
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+          <ExpansionPanel expanded={expanded === 'panel2'} onChange={this.handleChange('panel2')}>
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography className={classes.heading}></Typography>
+              <Typography className={classes.secondaryHeading}>Carpet Cleaning Estimate</Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <SqrFtEstimate calculateRunningTotal={this.calculateRunningTotal} floorType='grout' />
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+          <ExpansionPanel expanded={expanded === 'panel3'} onChange={this.handleChange('panel3')}>
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography className={classes.heading}></Typography>
+              <Typography className={classes.secondaryHeading}>Grout and Tile Cleaning Estimate</Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <Typography>
+                Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit amet egestas
+                eros, vitae egestas augue. Duis vel est augue.
+              </Typography>
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+          <ExpansionPanel expanded={expanded === 'panel4'} onChange={this.handleChange('panel4')}>
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography className={classes.heading}>Upholstery Services</Typography>
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+              <Upholstery calculateRunningTotal={this.calculateRunningTotal} />
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+           {this.props.clientType === 'residential' ?
+              <ExpansionPanel expanded={expanded === 'panel5'} onChange={this.handleChange('panel5')}>
+                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography className={classes.heading}>Extra Services</Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                  <ExtraServices />
+                </ExpansionPanelDetails>
+              </ExpansionPanel>
+            : null}
+           {this.props.clientType === 'commercial' ?
+              <ExpansionPanel expanded={expanded === 'panel5'} onChange={this.handleChange('panel5')}>
+                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography className={classes.heading}>Frequency</Typography>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails>
+                  <Frequency calculateRunningTotal={this.calculateRunningTotal} />
+                </ExpansionPanelDetails>
+              </ExpansionPanel>
+            : null}
+        </div>
+      );
     }
-}
+  }
+
+  const styles = theme => ({
+  root: {
+    width: '100%',
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    flexBasis: '33.33%',
+    flexShrink: 0,
+  },
+  secondaryHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: theme.palette.text.secondary,
+  },
+});
+
+EstimateWizard.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
 
 function mapStateToProps(state) {
     return {
@@ -111,4 +215,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps, { getServices })(EstimateWizard)
+export default withStyles(styles)(connect(mapStateToProps, { getServices })(EstimateWizard))

@@ -5,12 +5,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/icons": "^1.0.0-beta.43",
     "axios": "^0.18.0",
     "body-parser": "^1.18.2",
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
     "massive": "^4.7.2",
+    "material-ui": "^1.0.0-beta.45",
     "passport": "^0.4.0",
     "passport-auth0": "^0.6.1",
     "react": "^16.3.2",
@@ -22,7 +24,8 @@
     "redux": "^4.0.0",
     "redux-devtools-extension": "^2.13.2",
     "redux-promise-middleware": "^5.1.1",
-    "socket.io": "^2.1.0"
+    "socket.io": "^2.1.0",
+    "typeface-roboto": "0.0.54"
   },
   "scripts": {
     "start": "react-scripts start",
