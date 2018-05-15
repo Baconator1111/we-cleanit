@@ -7,6 +7,7 @@ import EstimateWizard from './views/EstimateWizard/EstimateWizard'
 import AdminLanding from './views/AdminLanding/AdminLanding'
 import AdminDash from './views/AdminDash/AdminDash'
 import ManageServices from './views/ManageServices/ManageServices'
+import ManageOpenTimes from './views/ManageOpenTimes/ManageOpenTimes'
 
 export default (
   <Switch> 
@@ -17,5 +18,6 @@ export default (
     <Route exact path = '/admin' component = {AdminLanding}/>
     <Route path = '/admin/dash' component = {AdminDash}/>
     <Route path = '/admin/manage-services' component = {ManageServices}/>
+    <Route path = '/admin/manage-open-times' component = {ManageOpenTimes}/>
   </Switch>
 )

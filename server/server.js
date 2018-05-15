@@ -144,12 +144,12 @@ io.on('connection', function (socket) {
             end_time,
             clean_time])
 
-        await sockets.emit('get appointments', appointments)
+        await socket.emit('get appointments', appointments)
         for (let i = 0; i < timesToDelete.length; i++) {
             await db.delete_open_times(timesToDelete[i])
         }
         const times = await db.get_open_times()
-        await sockets.emit('get open times', times)
+        await socket.emit('get open times', times)
 
     })
 
@@ -171,13 +171,13 @@ io.on('connection', function (socket) {
             start_time,
             frequency])
 
-        await sockets.emit('get commercial request', commercialRequest)
+        await socket.emit('get commercial request', commercialRequest)
 
     })
 
     // on 'open slots' inserts open slots record and sends current: open slots and appointments
 
-    socket.on('update open slots', async function (data) {
+    socket.on('open slots', async function (data) {
         const db = app.get('db'),
             { updateType } = data
 
@@ -230,7 +230,7 @@ io.on('connection', function (socket) {
         }
 
         const currentOpenTimes = await db.get_open_times()
-        await sockets.emit('get open times', currentOpenTimes)
+        await socket.emit('get open times', currentOpenTimes)
 
     })
 
