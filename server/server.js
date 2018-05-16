@@ -212,8 +212,8 @@ io.on('connection', function (socket) {
             for (let i = 0; i < days; i++) {
                 while (startTimeArr[0] != endTimeArr[0]) {
                     openTimes.push({
-                        open_start_time: new Date(startDateArr[0], +startDateArr[1] - 1, startDateArr[2], startTimeArr[0], startTimeArr[1]),
-                        open_end_time: new Date(startDateArr[0], +startDateArr[1] - 1, startDateArr[2], startTimeArr[0] + 1, startTimeArr[1])
+                        open_start_time: new Date(startDateArr[0], +startDateArr[1] - 1, startDateArr[2], +startTimeArr[0], startTimeArr[1]),
+                        open_end_time: new Date(startDateArr[0], +startDateArr[1] - 1, startDateArr[2], +startTimeArr[0] + 1, startTimeArr[1])
                     })
                     startTimeArr[0]++
                 }
@@ -229,8 +229,8 @@ io.on('connection', function (socket) {
             await db.delete_open_times(timeId)
         }
 
-        const currentOpenTimes = await db.get_open_times()
-        await socket.emit('get open times', currentOpenTimes)
+        db.get_open_times()
+            .then( times => socket.emit('get open times', times))
 
     })
 
