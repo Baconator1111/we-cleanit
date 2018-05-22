@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 
-import { getServices } from '../../ducks/reducer'
+import { getServices, updateTTC } from '../../ducks/reducer'
 
 import ExpandableBox from './../../components/ExpandableBox/ExpandableBox'
 
@@ -81,6 +82,8 @@ class EstimateWizard extends Component {
             runningTotal: runningTotal,
             timeToClean: timeToClean
         })
+
+        this.props.updateTTC(this.state.timeToClean)
     }
 
     render() {
@@ -95,6 +98,8 @@ class EstimateWizard extends Component {
 
                 <h2>Running Total ${this.state.runningTotal}</h2>
                 <h2>Estimated Cleaing Time {this.state.timeToClean} min</h2>
+
+                <Link to='/residential-appointment-scheduling' ><button>Schedule Now</button></Link>
             </div>
         )
     }
@@ -111,4 +116,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps, { getServices })(EstimateWizard)
+export default connect(mapStateToProps, { getServices, updateTTC })(EstimateWizard)

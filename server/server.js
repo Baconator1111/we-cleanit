@@ -126,6 +126,8 @@ io.on('connection', function (socket) {
         const db = app.get('db'),
             { client_name,
                 client_address,
+                client_phone,
+                client_email,
                 residential_sqft_carpet,
                 residential_sqft_grout,
                 residential_upholstery,
@@ -136,6 +138,8 @@ io.on('connection', function (socket) {
                 timesToDelete } = data
         const appointments = await db.create_appointment([client_name,
             client_address,
+            client_phone,
+            client_email,
             residential_sqft_carpet,
             residential_sqft_grout,
             residential_upholstery,
@@ -156,6 +160,8 @@ io.on('connection', function (socket) {
     socket.on('make commercial request', async function (data) {
         const db = app.get('db'),
             { company_name,
+                client_phone,
+                client_email,
                 company_address,
                 company_sqft_carpet,
                 company_sqft_grout,
@@ -163,6 +169,8 @@ io.on('connection', function (socket) {
                 company_extras,
                 frequency } = data
         const commercialRequest = await db.create_commercial_request([company_name,
+            client_phone,
+            client_email,
             company_address,
             company_sqft_carpet,
             company_sqft_grout,
@@ -230,7 +238,7 @@ io.on('connection', function (socket) {
         }
 
         db.get_open_times()
-            .then( times => socket.emit('get open times', times))
+            .then( times => io.sockets.emit('get open times', times))
 
     })
 
