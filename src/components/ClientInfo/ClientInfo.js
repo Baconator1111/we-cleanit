@@ -28,8 +28,9 @@ class ClientInfo extends Component {
         })
     }
 
-    handleInput(key, value) {
-        this.setState({ [key]: value })
+    async handleInput(key, value) {
+        await this.setState({ [key]: value })
+        this.props.updateContactInfo(this.state)
     }
 
     handleClear() {
@@ -40,10 +41,6 @@ class ClientInfo extends Component {
             clientPhone: '',
             clientEmail: ''
         })
-    }
-
-    handleSave() {
-        this.props.updateContactInfo(this.state)
     }
 
     render() {
@@ -64,14 +61,14 @@ class ClientInfo extends Component {
                 </div>
                 <div>
                     <h6>Phone:</h6>
-                    <input onChange={e => this.handleInput('clientPhone', e.target.value)} type="text" value={this.state.clientPhone} />
+                    <input onChange={e => this.handleInput('clientPhone', e.target.value)} type="text" placeholder='XXX-XXX-XXXX' value={this.state.clientPhone} />
                     <div>Your number will only be used to be contacted for this scheduled appointment. We do not share this information.</div>
                 </div>
                 <div>
                     <h6>Email:</h6>
                     <input onChange={e => this.handleInput('clientEmail', e.target.value)} type="text" value={this.state.clientEmail} />
                 </div>
-                <button onClick={() => this.handleSave()} >Save information</button>
+                <button onClick={() => this.handleClear()} >Clear Information</button>
             </div>
         )
     }

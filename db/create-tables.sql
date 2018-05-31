@@ -12,7 +12,9 @@ create table open_times (
 create table client_appointments (
     appointment_id serial primary key,
     client_name varchar(50),
-    client_address varchar(100),
+    client_address varchar(150),
+    client_phone varchar(20),
+    client_email varchar(100),
     residential_sqft_carpet int,
     residential_sqft_grout int,
     residential_upholstery text,

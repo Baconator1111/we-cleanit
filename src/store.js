@@ -19,6 +19,7 @@ store.subscribe(() => {
     floorSectionsGrout: store.getState().floorSectionsGrout,
     upholstery: store.getState().upholstery,
     otherServices: store.getState().otherServices,
-    frequency: store.getState().frequency
+    frequency: store.getState().frequency,
+    timeToClean: store.getState().timeToClean
   })
 })

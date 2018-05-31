@@ -126,6 +126,8 @@ io.on('connection', function (socket) {
         const db = app.get('db'),
             { client_name,
                 client_address,
+                client_phone,
+                client_email,
                 residential_sqft_carpet,
                 residential_sqft_grout,
                 residential_upholstery,
@@ -136,6 +138,8 @@ io.on('connection', function (socket) {
                 timesToDelete } = data
         const appointments = await db.create_appointment([client_name,
             client_address,
+            client_phone,
+            client_email,
             residential_sqft_carpet,
             residential_sqft_grout,
             residential_upholstery,
@@ -144,18 +148,20 @@ io.on('connection', function (socket) {
             end_time,
             clean_time])
 
-        await sockets.emit('get appointments', appointments)
+        await socket.emit('get appointments', appointments)
         for (let i = 0; i < timesToDelete.length; i++) {
             await db.delete_open_times(timesToDelete[i])
         }
-        const times = await db.get_open_times()
-        await sockets.emit('get open times', times)
+        db.get_open_times()
+        .then( times => io.sockets.emit('get open times', times))
 
     })
 
     socket.on('make commercial request', async function (data) {
         const db = app.get('db'),
             { company_name,
+                client_phone,
+                client_email,
                 company_address,
                 company_sqft_carpet,
                 company_sqft_grout,
@@ -163,6 +169,8 @@ io.on('connection', function (socket) {
                 company_extras,
                 frequency } = data
         const commercialRequest = await db.create_commercial_request([company_name,
+            client_phone,
+            client_email,
             company_address,
             company_sqft_carpet,
             company_sqft_grout,
@@ -171,13 +179,13 @@ io.on('connection', function (socket) {
             start_time,
             frequency])
 
-        await sockets.emit('get commercial request', commercialRequest)
+        await socket.emit('get commercial request', commercialRequest)
 
     })
 
     // on 'open slots' inserts open slots record and sends current: open slots and appointments
 
-    socket.on('update open slots', async function (data) {
+    socket.on('open slots', async function (data) {
         const db = app.get('db'),
             { updateType } = data
 
@@ -212,8 +220,8 @@ io.on('connection', function (socket) {
             for (let i = 0; i < days; i++) {
                 while (startTimeArr[0] != endTimeArr[0]) {
                     openTimes.push({
-                        open_start_time: new Date(startDateArr[0], +startDateArr[1] - 1, startDateArr[2], startTimeArr[0], startTimeArr[1]),
-                        open_end_time: new Date(startDateArr[0], +startDateArr[1] - 1, startDateArr[2], startTimeArr[0] + 1, startTimeArr[1])
+                        open_start_time: new Date(startDateArr[0], +startDateArr[1] - 1, startDateArr[2], +startTimeArr[0], startTimeArr[1]),
+                        open_end_time: new Date(startDateArr[0], +startDateArr[1] - 1, startDateArr[2], +startTimeArr[0] + 1, startTimeArr[1])
                     })
                     startTimeArr[0]++
                 }
@@ -229,8 +237,8 @@ io.on('connection', function (socket) {
             await db.delete_open_times(timeId)
         }
 
-        const currentOpenTimes = await db.get_open_times()
-        await sockets.emit('get open times', currentOpenTimes)
+        db.get_open_times()
+            .then( times => io.sockets.emit('get open times', times))
 
     })
 
