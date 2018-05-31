@@ -9,6 +9,7 @@ import AdminLanding from './views/AdminLanding/AdminLanding'
 import AdminDash from './views/AdminDash/AdminDash'
 import ManageServices from './views/ManageServices/ManageServices'
 import ManageOpenTimes from './views/ManageOpenTimes/ManageOpenTimes'
+import ThankYou from './views/ThankYou/ThankYou'
 
 export default (
   <Switch> 
@@ -17,6 +18,7 @@ export default (
     <Route path = '/residential-home-cleaning' component = {EstimateWizard}/>
     <Route path = '/residential-appointment-scheduling' component = {ResidentialSchedular}/>
     <Route path = '/commercial-home-cleaning' component = {EstimateWizard}/>
+    <Route path = '/schedule-succsess' component = {ThankYou}/>
     <Route exact path = '/admin' component = {AdminLanding}/>
     <Route path = '/admin/dash' component = {AdminDash}/>
     <Route path = '/admin/manage-services' component = {ManageServices}/>

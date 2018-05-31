@@ -152,8 +152,8 @@ io.on('connection', function (socket) {
         for (let i = 0; i < timesToDelete.length; i++) {
             await db.delete_open_times(timesToDelete[i])
         }
-        const times = await db.get_open_times()
-        await socket.emit('get open times', times)
+        db.get_open_times()
+        .then( times => io.sockets.emit('get open times', times))
 
     })
 

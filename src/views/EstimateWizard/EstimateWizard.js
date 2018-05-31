@@ -1,6 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
+
+import { Redirect } from 'react-router'
+
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 import { getServices, updateTTC } from '../../ducks/reducer'
 
@@ -20,7 +24,8 @@ class EstimateWizard extends Component {
             timeToClean: 0,
             carpetPrice: 0,
             groutPrice: 0,
-            floorTime: 0
+            floorTime: 0,
+            redirect: false
         }
 
         this.calculateRunningTotal = this.calculateRunningTotal.bind(this)
@@ -28,7 +33,7 @@ class EstimateWizard extends Component {
 
     async componentDidMount() {
         await this.props.getServices()
-        
+
         this.setState({
             carpetPrice: this.props.servicesInfo.mainServices[0].carpet_price,
             groutPrice: this.props.servicesInfo.mainServices[0].grout_price,
@@ -78,7 +83,7 @@ class EstimateWizard extends Component {
             timeToClean += upholstery.upholstery_ttc
         })
 
-        this.setState({ 
+        this.setState({
             runningTotal: runningTotal,
             timeToClean: timeToClean
         })
@@ -86,9 +91,29 @@ class EstimateWizard extends Component {
         this.props.updateTTC(this.state.timeToClean)
     }
 
+    checkInfo() {
+        let props = this.props
+        let contactInfo = props.contactInfo
+        if ((props.floorSectionsCarpet[0] || props.floorSectionsGrout[0] || props.upholstery[0]) && contactInfo.clientName && contactInfo.clientAddress && contactInfo.clientPhone.length === 12 && contactInfo.city) {
+            this.setState({ redirect: true })
+        } else if (!props.floorSectionsCarpet[0] && !props.floorSectionsGrout[0] && !props.upholstery[0]) {
+            toast.error('Please select Qualifying services.')
+        } else if(contactInfo.clientPhone.length !== 12){
+            toast.error('Please enter phone number in XXX-XXX-XXXX format.')
+        } else if (!contactInfo.clientName || !contactInfo.clientAddress || !contactInfo.clientPhone || !contactInfo.city) {
+            toast.error('Please fill out required contact information.')
+        }
+    }
+
     render() {
+
+        if (this.state.redirect) {
+            return <Redirect push to='/residential-appointment-scheduling' />;
+        }
+
         return (
             <div>
+                <ToastContainer />
                 <ExpandableBox boxTitle='Contact Information' ><ClientInfo /></ExpandableBox>
                 <ExpandableBox boxTitle='Carpet Cleaning Estimate' ><SqrFtEstimate calculateRunningTotal={this.calculateRunningTotal} floorType='carpet' /></ExpandableBox>
                 <ExpandableBox boxTitle='Grout and Tile Cleaning Estimate' ><SqrFtEstimate calculateRunningTotal={this.calculateRunningTotal} floorType='grout' /></ExpandableBox>
@@ -99,7 +124,7 @@ class EstimateWizard extends Component {
                 <h2>Running Total ${this.state.runningTotal}</h2>
                 <h2>Estimated Cleaing Time {this.state.timeToClean} min</h2>
 
-                <Link to='/residential-appointment-scheduling' ><button>Schedule Now</button></Link>
+                <button onClick={() => this.checkInfo()} >Schedule Now</button>
             </div>
         )
     }
@@ -108,6 +133,7 @@ class EstimateWizard extends Component {
 function mapStateToProps(state) {
     return {
         clientType: state.clientType,
+        contactInfo: state.contactInfo,
         servicesInfo: state.servicesInfo,
         floorSectionsCarpet: state.floorSectionsCarpet,
         floorSectionsGrout: state.floorSectionsGrout,

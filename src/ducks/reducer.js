@@ -31,7 +31,7 @@ module.exports = {
         }
     },
     getServices: function () {
-        let servicesInfo = axios.get('/api/allServices').then( resp => resp.data )
+        let servicesInfo = axios.get('/api/allServices').then(resp => resp.data)
         return {
             type: GET_SERVICES,
             payload: servicesInfo
@@ -114,7 +114,13 @@ module.exports = {
                 return Object.assign({}, state, { timeToClean: action.payload })
 
             case CLEAR_STATE:
-                return Object.assign({}, initialState)
+                return Object.assign({}, state,
+                    { floorSectionsCarpet: [] },
+                    { floorSectionsGrout: [] },
+                    { upholstery: [] },
+                    { otherServices: {} },
+                    { frequency: null },
+                    { timeToClean: 0 })
 
             default:
                 return state;

@@ -1,8 +1,16 @@
 import React, { Component } from 'react'
+
+import { Link } from 'react-router-dom'
+
 import { socketConnect } from 'socket.io-react'
+
 import { connect } from 'react-redux'
+
 import BigCalendar from 'react-big-calendar'
 import moment from 'moment'
+
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 import { clearState } from '../../ducks/reducer'
 
@@ -51,7 +59,7 @@ class ResidentialSchedular extends Component {
 
                 // console.log(year, month, day, startTime)
 
-                //making title hours for both starting and ending times for calendar label
+                //making hour title for both starting and ending times for calendar label
 
                 let startTimeLabel
                 if (startTime < 12) {
@@ -76,6 +84,7 @@ class ResidentialSchedular extends Component {
 
                 // console.log('static date:',new Date(2018, 4, 7, 10))
                 // console.log(new Date(+year, +month, +day, +startTime), +year, +month, +day, startTime )
+
                 // making obejects for calander
                 newData.push({
                     id: time.time_id,
@@ -84,8 +93,8 @@ class ResidentialSchedular extends Component {
                     end: new Date(year, month, day, endTime, 0),
                 })
             })
-            this.setState({ 
-                events: newData 
+            this.setState({
+                events: newData
             })
         })
 
@@ -106,7 +115,10 @@ class ResidentialSchedular extends Component {
         let appointmentStartDateTime = new Date(dateArr[0], +dateArr[1] - 1, dateArr[2], +timeArr[0], timeArr[1])
         let appointmentEndDateTime = new Date(dateArr[0], +dateArr[1] - 1, dateArr[2], +timeArr[0] + this.state.timeToClean, timeArr[1])
 
-        console.log('start:', appointmentStartDateTime, 'end:', appointmentEndDateTime)
+        // console.log('start:', appointmentStartDateTime, 'end:', appointmentEndDateTime)
+
+        // go through open times to check if appointment time slots are available
+
         let appointmentStart = false
         let appointmentStartId
         this.state.events.forEach(time => {
@@ -133,55 +145,101 @@ class ResidentialSchedular extends Component {
 
         let timeSlots = []
 
-        console.log(timeSlots)
+        // console.log(timeSlots)
 
         // console.log(appointmentStart, appointmentEnd)
-        if (appointmentStart === true && appointmentEnd === true) {
-            this.setState({ available: true })
 
+        // check to make sure the times are valid
+        if (appointmentStart === true && appointmentEnd === true) {
+
+            // get valid time ids to delete when scheduled
             while (appointmentStartId <= appointmentEndId) {
                 console.log('while loop ran')
-                console.log('start id:', appointmentStartId, 'end id:', appointmentEndId)
+                // console.log('start id:', appointmentStartId, 'end id:', appointmentEndId)
                 for (let i = 0; i < this.state.events.length; i++) {
-                    console.log('event:', this.state.events[i].id, 'start id:', appointmentStartId)
+                    console.log('for loop in while ran')
+                    // console.log('event:', this.state.events[i].id, 'start id:', appointmentStartId)
                     if (this.state.events[i].id === appointmentStartId && appointmentStartId <= appointmentEndId) {
-                        console.log('if statement met')
+                        // console.log('if statement met')
                         timeSlots.push(this.state.events[i])
                         appointmentStartId++
                     }
+                }
+                if (appointmentStartId < appointmentEndId) {
+                    this.setState({ available: false })
+                    toast.error('Time is Not Available!')
+                    break
+                } else {
+                    this.setState({ available: true })
+                    toast.success('Time is Available!')
                 }
             }
             timeSlots = timeSlots.map(time => time.id)
         } else {
             this.setState({ available: false })
+            toast.error('Time is Not Available!')
         }
 
-        this.setState({ 
+        this.setState({
             appointmentTimeSlots: timeSlots,
             appointmentStartTime: appointmentStartDateTime,
             appointmentEndTime: appointmentEndDateTime
         })
-        console.log(timeSlots)
+        // console.log(timeSlots)
     }
 
-    handleScheduleAppointment() {
+    async handleScheduleAppointment() {
         const { socket } = this.props,
             reduxState = this.props.state
 
-        // socket.emit('make appointment', {
-        //     client_name: reduxState.contactInfo.clientName,
-        //     client_address: reduxState.contactInfo.clientAddress + ', ' + reduxState.contactInfo.city,
-        //     client_phone: reduxState.contactInfo.clientPhone,
-        //     client_email: reduxState.contactInfo.clientEmail,
-        //     residential_sqft_carpet: reduxState.,
-        //     residential_sqft_grout: reduxState.,
-        //     residential_upholstery: reduxState.,
-        //     residential_extras: reduxState.,
-        //     start_time: reduxState.,
-        //     end_time: reduxState.,
-        //     clean_time: reduxState.,
-        //     timesToDelete: reduxState.
-        // })
+        // Do the math to create carpet and grout square footage
+
+        let totalSqrFtCarpet = 0
+        let totalSqrFtGrout = 0
+
+        if (reduxState.floorSectionsGrout[0]) {
+            reduxState.floorSectionsCarpet.forEach(section => {
+                totalSqrFtCarpet += section.length * section.width
+            })
+        }
+
+        if (reduxState.floorSectionsGrout[0]) {
+            reduxState.floorSectionsGrout.forEach(section => {
+                totalSqrFtGrout += section.length * section.width
+            })
+        }
+        // Create array with proper ids for both apoholstery or extra services
+
+        let upholsteryArr = []
+        if (reduxState.upholstery[0]) {
+            reduxState.upholstery.forEach(upholstery => {
+                upholsteryArr.push(upholstery.upholstery_id)
+            })
+        }
+
+        let otherServicesArr = []
+        if (reduxState.otherServices.servicesSelected) {
+            reduxState.otherServices.servicesSelected.forEach(otherService => {
+                otherServicesArr.push(otherService.extra_id)
+            })
+        }
+
+        await socket.emit('make appointment', {
+            client_name: reduxState.contactInfo.clientName,
+            client_address: reduxState.contactInfo.clientAddress + ', ' + reduxState.contactInfo.city,
+            client_phone: reduxState.contactInfo.clientPhone,
+            client_email: reduxState.contactInfo.clientEmail,
+            residential_sqft_carpet: totalSqrFtCarpet,
+            residential_sqft_grout: totalSqrFtGrout,
+            residential_upholstery: upholsteryArr.toString(),
+            residential_extras: otherServicesArr.toString(),
+            start_time: this.state.appointmentStartTime,
+            end_time: this.state.appointmentEndTime,
+            clean_time: reduxState.timeToClean,
+            timesToDelete: this.state.appointmentTimeSlots
+        })
+        this.props.clearState()
+
     }
 
     render() {
@@ -190,12 +248,13 @@ class ResidentialSchedular extends Component {
             availablility = <h3>Select a Date and Time</h3>
         } else if (this.state.available === false) {
             availablility = <h3>Not Available</h3>
-        } else {
+        } else if (this.state.available === true) {
             availablility = <h3>Available</h3>
         }
         BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment))
         return (
             <div>
+                <ToastContainer />
                 <div className='calendar' >
                     <BigCalendar
                         events={this.state.events}
@@ -206,10 +265,10 @@ class ResidentialSchedular extends Component {
                 </div>
                 <h4>Estimated Time: {this.state.timeToClean} hours</h4>
                 Date<input type="date" onChange={e => this.handleInput('appointmentDate', e.target.value)} />
-                Start Time<input type="time" onChange={e => this.handleInput('startTime', e.target.value)} />
+                Start Time<input type="time" step='3600' onChange={e => this.handleInput('startTime', e.target.value)} />
                 <button onClick={() => this.handleCheckAvailablity()} >Check Availablity</button>
                 {availablility}
-                {this.state.available === true ? <button onClick={() => this.handleScheduleAppointment()} >Schedule Now!</button> : <button>Schedule Now!</button>}
+                {this.state.available === true ? <Link to='/schedule-succsess' ><button onClick={() => this.handleScheduleAppointment()} >Schedule Now!</button></Link> : <button>Schedule Now!</button>}
             </div>
         )
     }
