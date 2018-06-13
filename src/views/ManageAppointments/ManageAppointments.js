@@ -35,7 +35,7 @@ class ManageAppointments extends Component {
             })
             this.setState({ appointments: data })
             if (!this.state.first) {
-                toast.success('New Appointment made!', {
+                toast.success('New Appointment made!', { 
                     autoClose: false
                 })
             }
@@ -47,7 +47,7 @@ class ManageAppointments extends Component {
     render() {
         // console.log(this.state)
         let appointments = this.state.appointments.map(appointment => {
-            return <Appointment key={appointment.appointment_id} appointment={appointment} />
+            return <Appointment clientType='residential' key={appointment.appointment_id} appointment={appointment} />
         })
         if (this.props.adminUser === 'pending') {
             return <Redirect push to='/admin/dash' />

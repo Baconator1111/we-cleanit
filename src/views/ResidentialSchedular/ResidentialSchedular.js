@@ -193,7 +193,7 @@ class ResidentialSchedular extends Component {
         let totalSqrFtCarpet = 0
         let totalSqrFtGrout = 0
 
-        if (reduxState.floorSectionsGrout[0]) {
+        if (reduxState.floorSectionsCarpet[0]) {
             reduxState.floorSectionsCarpet.forEach(section => {
                 totalSqrFtCarpet += section.length * section.width
             })

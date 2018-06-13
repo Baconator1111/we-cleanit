@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
+import { socketConnect } from 'socket.io-react'
+
 import { Redirect } from 'react-router'
 
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-import { getServices, updateTTC, updatePriceEstimate } from '../../ducks/reducer'
+import { getServices, updateTTC, updatePriceEstimate, clearState } from '../../ducks/reducer'
 
 import ExpandableBox from './../../components/ExpandableBox/ExpandableBox'
 
@@ -35,9 +37,9 @@ class EstimateWizard extends Component {
         await this.props.getServices()
 
         this.setState({
-            carpetPrice: this.props.servicesInfo.mainServices[0].carpet_price,
-            groutPrice: this.props.servicesInfo.mainServices[0].grout_price,
-            floorTime: this.props.servicesInfo.mainServices[0].floor_ttc
+            carpetPrice: this.props.state.servicesInfo.mainServices[0].carpet_price,
+            groutPrice: this.props.state.servicesInfo.mainServices[0].grout_price,
+            floorTime: this.props.state.servicesInfo.mainServices[0].floor_ttc
         })
         this.calculateRunningTotal()
 
@@ -64,11 +66,11 @@ class EstimateWizard extends Component {
         let totalSqrFtCarpet = 0
         let totalSqrFtGrout = 0
 
-        this.props.floorSectionsCarpet.forEach(section => {
+        this.props.state.floorSectionsCarpet.forEach(section => {
             totalSqrFtCarpet += section.length * section.width
         })
 
-        this.props.floorSectionsGrout.forEach(section => {
+        this.props.state.floorSectionsGrout.forEach(section => {
             totalSqrFtGrout += section.length * section.width
         })
         runningTotal += totalSqrFtCarpet * this.state.carpetPrice / 100
@@ -79,14 +81,14 @@ class EstimateWizard extends Component {
 
         // add upholstery pieces
 
-        console.log(this.props.upholstery)
+        console.log(this.props.state.upholstery)
 
-        this.props.upholstery.forEach(upholstery => {
+        this.props.state.upholstery.forEach(upholstery => {
             runningTotal += upholstery.upholstery_price
             timeToClean += upholstery.upholstery_ttc
         })
 
-        console.log( 'running total', runningTotal, 'ttc', timeToClean)
+        console.log('running total', runningTotal, 'ttc', timeToClean)
 
         await this.setState({
             runningTotal: runningTotal,
@@ -97,24 +99,81 @@ class EstimateWizard extends Component {
         await this.props.updatePriceEstimate(this.state.runningTotal)
     }
 
-    checkInfo() {
-        let props = this.props
-        let contactInfo = props.contactInfo
-        if ((props.floorSectionsCarpet[0] || props.floorSectionsGrout[0] || props.upholstery[0]) && contactInfo.clientName && contactInfo.clientAddress && contactInfo.clientPhone.length === 12 && contactInfo.city) {
-            this.setState({ redirect: true })
-        } else if (!props.floorSectionsCarpet[0] && !props.floorSectionsGrout[0] && !props.upholstery[0]) {
+    async checkInfo() {
+        let reduxState = this.props.state
+        let contactInfo = reduxState.contactInfo
+        if ((reduxState.floorSectionsCarpet[0] || reduxState.floorSectionsGrout[0] || reduxState.upholstery[0]) && contactInfo.clientName && contactInfo.clientAddress && contactInfo.clientPhone.length === 12 && contactInfo.city && contactInfo.clientEmail && reduxState.frequency) {
+            if (reduxState.clientType === 'residential') {
+                this.setState({ redirect: 'residential' })
+            } else if (reduxState.clientType === 'commercial') {
+                await this.handleSubmitCommercialRequest()
+                this.setState({ redirect: 'commercial' })
+            }
+        } else if (!reduxState.frequency) {
+            toast.error('Please select a Frequency.')
+        } else if (!reduxState.floorSectionsCarpet[0] && !reduxState.floorSectionsGrout[0] && !reduxState.upholstery[0]) {
             toast.error('Please select Qualifying services.')
-        } else if(contactInfo.clientPhone.length !== 12){
+        } else if (contactInfo.clientPhone.length !== 12) {
             toast.error('Please enter phone number in XXX-XXX-XXXX format.')
-        } else if (!contactInfo.clientName || !contactInfo.clientAddress || !contactInfo.clientPhone || !contactInfo.city) {
+        } else if (!contactInfo.clientName || !contactInfo.clientAddress || !contactInfo.clientPhone || !contactInfo.city || !contactInfo.clientEmail) {
             toast.error('Please fill out required contact information.')
         }
     }
 
+    async handleSubmitCommercialRequest() {
+        const { socket } = this.props,
+            reduxState = this.props.state
+
+        // Do the math to create carpet and grout square footage
+
+        let totalSqrFtCarpet = 0
+        let totalSqrFtGrout = 0
+
+        if (reduxState.floorSectionsCarpet[0]) {
+            reduxState.floorSectionsCarpet.forEach(section => {
+                totalSqrFtCarpet += section.length * section.width
+            })
+        }
+
+        if (reduxState.floorSectionsGrout[0]) {
+            reduxState.floorSectionsGrout.forEach(section => {
+                totalSqrFtGrout += section.length * section.width
+            })
+        }
+        // Create array with proper ids for both apoholstery or extra services
+
+        let upholsteryArr = []
+        if (reduxState.upholstery[0]) {
+            reduxState.upholstery.forEach(upholstery => {
+                upholsteryArr.push(upholstery.upholstery_id)
+            })
+        }
+
+        await socket.emit('make commercial request', {
+            company_name: reduxState.contactInfo.clientName,
+            company_address: reduxState.contactInfo.clientAddress + ', ' + reduxState.contactInfo.city,
+            company_phone: reduxState.contactInfo.clientPhone,
+            company_email: reduxState.contactInfo.clientEmail,
+            company_sqft_carpet: totalSqrFtCarpet,
+            company_sqft_grout: totalSqrFtGrout,
+            company_upholstery: upholsteryArr.toString(),
+            frequency: reduxState.frequency,
+            price_estimate: reduxState.priceEstimate,
+        })
+        this.props.clearState()
+
+    }
+
     render() {
 
-        if (this.state.redirect) {
+        if (this.state.redirect === 'residential') {
             return <Redirect push to='/residential-appointment-scheduling' />
+        } else if (this.state.redirect === 'commercial') {
+            return <Redirect push to='/schedule-succsess' />
+        }
+
+        if (this.props.state.clientType === '') {
+            return <Redirect push to='/services-selection' />
         }
 
         return (
@@ -124,28 +183,20 @@ class EstimateWizard extends Component {
                 <ExpandableBox boxTitle='Carpet Cleaning Estimate' ><SqrFtEstimate calculateRunningTotal={this.calculateRunningTotal} floorType='carpet' /></ExpandableBox>
                 <ExpandableBox boxTitle='Grout and Tile Cleaning Estimate' ><SqrFtEstimate calculateRunningTotal={this.calculateRunningTotal} floorType='grout' /></ExpandableBox>
                 <ExpandableBox boxTitle='Upholstery Services' ><Upholstery calculateRunningTotal={this.calculateRunningTotal} /></ExpandableBox>
-                {this.props.clientType === 'residential' ? <ExpandableBox boxTitle='Extra Services' ><ExtraServices /></ExpandableBox> : null}
-                {this.props.clientType === 'commercial' ? <ExpandableBox boxTitle='Frequency' ><Frequency calculateRunningTotal={this.calculateRunningTotal} /></ExpandableBox> : null}
+                {this.props.state.clientType === 'residential' ? <ExpandableBox boxTitle='Extra Services' ><ExtraServices /></ExpandableBox> : null}
+                {this.props.state.clientType === 'commercial' ? <ExpandableBox boxTitle='Frequency' ><Frequency calculateRunningTotal={this.calculateRunningTotal} /></ExpandableBox> : null}
 
                 <h2>Running Total ${this.state.runningTotal}</h2>
                 <h2>Estimated Cleaing Time {this.state.timeToClean} min</h2>
-
-                <button onClick={() => this.checkInfo()} >Schedule Now</button>
+                {this.props.state.clientType === 'residential' ? <button onClick={() => this.checkInfo()} >Schedule Now</button> : null}
+                {this.props.state.clientType === 'commercial' ? <button onClick={() => this.checkInfo()} >Submit</button> : null}
             </div>
         )
     }
 }
 
 function mapStateToProps(state) {
-    return {
-        clientType: state.clientType,
-        contactInfo: state.contactInfo,
-        servicesInfo: state.servicesInfo,
-        floorSectionsCarpet: state.floorSectionsCarpet,
-        floorSectionsGrout: state.floorSectionsGrout,
-        frequency: state.frequency,
-        upholstery: state.upholstery
-    }
+    return { state }
 }
 
-export default connect(mapStateToProps, { getServices, updateTTC, updatePriceEstimate })(EstimateWizard)
+export default socketConnect(connect(mapStateToProps, { getServices, updateTTC, updatePriceEstimate, clearState })(EstimateWizard))
