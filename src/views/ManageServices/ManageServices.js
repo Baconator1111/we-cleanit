@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import axios from 'axios'
 
+import { Redirect } from 'react-router'
+
 import { getServices } from '../../ducks/reducer'
 
 import ExpandableBox from './../../components/ExpandableBox/ExpandableBox'
@@ -164,56 +166,60 @@ class ManageServices extends Component {
         } else {
             addExtraJSX = null
         }
-
-        return (
-            <div>
-                <h1>Manage Services</h1>
-                <ExpandableBox boxTitle='Carpet Cleaning'>
-                    <h3>Carpet Cleaning</h3>
-                    <h6>Price per Square Foot in Cents</h6>
-                    <input onChange={e => this.handleChange('carpetPrice', e.target.value)} type="number" min='0' value={this.state.carpetPrice} />
-                    <button onClick={() => this.handleMainServicesSubmit('carpetPrice')} >Submit Price Change</button>
-                    <h6>Promotional</h6>
-                    <input type="number" min='0' placeholder='% Discount' />
-                    <h6>Promotion End Date</h6>
-                    <input type="date" />
-                </ExpandableBox>
-                <ExpandableBox boxTitle='Tile and Grout' >
-                    <h3>Tile and Grout</h3>
-                    <h6>Price per Square Foot in Cents</h6>
-                    <input onChange={e => this.handleChange('groutPrice', e.target.value)} type="number" min='0' value={this.state.groutPrice} />
-                    <button onClick={() => this.handleMainServicesSubmit('groutPrice')} >Submit Price Change</button>
-                    <h6>Promotional</h6>
-                    <input type="number" min='0' placeholder='% Discount' />
-                    <h6>Promotion End Date</h6>
-                    <input type="date" />
-                </ExpandableBox>
-                <ExpandableBox boxTitle='Time to Clean Floors' >
-                    <h4>Time to Clean Floors</h4>
-                    <input onChange={e => this.handleChange('floorTime', e.target.value)} type="number" min='0' value={this.state.floorTime} />
-                    <h6>minutes per 1000 square feet</h6>
-                    <button onClick={() => this.handleMainServicesSubmit('floorTime')} >Submit Time Change</button>
-                </ExpandableBox>
-                <ExpandableBox boxTitle='Upholstery' >
-                    <h3>Upholstery</h3>
-                    {upholsteryJSX}
-                    {addUpholsteryJSX}
-                    {this.state.addUpholstery === false ? <button onClick={() => this.handleAddUpholsteryOpen()} >Add Upholstery Piece</button> : null}
-                </ExpandableBox>
-                <ExpandableBox boxTitle='Other Services' >
-                    <h3>Other Services</h3>
-                    {otherServicesJSX}
-                    {addExtraJSX}
-                    {this.state.addExtra === false ? <button onClick={() => this.handleAddExtraOpen()} >Add Extra Service</button> : null }
-                </ExpandableBox>
-            </div>
-        )
+        if (this.props.adminUser === 'pending') {
+            return <Redirect push to='/admin/dash' />
+        } else if (this.props.adminUser) {
+            return (
+                <div>
+                    <h1>Manage Services</h1>
+                    <ExpandableBox boxTitle='Carpet Cleaning'>
+                        <h3>Carpet Cleaning</h3>
+                        <h6>Price per Square Foot in Cents</h6>
+                        <input onChange={e => this.handleChange('carpetPrice', e.target.value)} type="number" min='0' value={this.state.carpetPrice} />
+                        <button onClick={() => this.handleMainServicesSubmit('carpetPrice')} >Submit Price Change</button>
+                        <h6>Promotional</h6>
+                        <input type="number" min='0' placeholder='% Discount' />
+                        <h6>Promotion End Date</h6>
+                        <input type="date" />
+                    </ExpandableBox>
+                    <ExpandableBox boxTitle='Tile and Grout' >
+                        <h3>Tile and Grout</h3>
+                        <h6>Price per Square Foot in Cents</h6>
+                        <input onChange={e => this.handleChange('groutPrice', e.target.value)} type="number" min='0' value={this.state.groutPrice} />
+                        <button onClick={() => this.handleMainServicesSubmit('groutPrice')} >Submit Price Change</button>
+                        <h6>Promotional</h6>
+                        <input type="number" min='0' placeholder='% Discount' />
+                        <h6>Promotion End Date</h6>
+                        <input type="date" />
+                    </ExpandableBox>
+                    <ExpandableBox boxTitle='Time to Clean Floors' >
+                        <h4>Time to Clean Floors</h4>
+                        <input onChange={e => this.handleChange('floorTime', e.target.value)} type="number" min='0' value={this.state.floorTime} />
+                        <h6>minutes per 1000 square feet</h6>
+                        <button onClick={() => this.handleMainServicesSubmit('floorTime')} >Submit Time Change</button>
+                    </ExpandableBox>
+                    <ExpandableBox boxTitle='Upholstery' >
+                        <h3>Upholstery</h3>
+                        {upholsteryJSX}
+                        {addUpholsteryJSX}
+                        {this.state.addUpholstery === false ? <button onClick={() => this.handleAddUpholsteryOpen()} >Add Upholstery Piece</button> : null}
+                    </ExpandableBox>
+                    <ExpandableBox boxTitle='Other Services' >
+                        <h3>Other Services</h3>
+                        {otherServicesJSX}
+                        {addExtraJSX}
+                        {this.state.addExtra === false ? <button onClick={() => this.handleAddExtraOpen()} >Add Extra Service</button> : null}
+                    </ExpandableBox>
+                </div>
+            )
+        }
     }
 }
 
 function mapStateToProps(state) {
     return {
-        servicesInfo: state.servicesInfo
+        servicesInfo: state.servicesInfo,
+        adminUser: state.adminUser
     }
 }
 

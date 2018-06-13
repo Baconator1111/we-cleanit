@@ -26,12 +26,12 @@ class Upholstery extends Component {
         this.setState({ selected: input })
     }
 
-    handleAddSelectedUpholstery() {
+    async handleAddSelectedUpholstery() {
         let upholsterySelected = this.state.upholsterySelected
         upholsterySelected.push(this.state.upholsteryOffered[+this.state.selected])
         this.setState({ upholsterySelected: upholsterySelected })
 
-        this.props.updateUpholstery(this.state.upholsterySelected)
+        await this.props.updateUpholstery(this.state.upholsterySelected)
         this.props.calculateRunningTotal()
     }
 
@@ -80,7 +80,7 @@ class Upholstery extends Component {
 
 function mapStateToProps(state) {
     return {
-        servicesInfo: state.servicesInfo,                
+        servicesInfo: state.servicesInfo,
         upholstery: state.upholstery
     }
 }

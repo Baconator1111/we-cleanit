@@ -76,6 +76,14 @@ app.get('/logout', (req, res) => {
 })
 
 // api requests
+app.get('/api/user', (req, res, next) => {
+    if (req.user) {
+        const user = req.user.user_id
+        res.status(200).send(user.toString())
+    } else { 
+        res.status(200).send(false)
+    }
+})
 
 app.get('/api/commercial', initializeCtrl.getCommercialRequests)
 app.get('/api/appointments', initializeCtrl.getAppointments)
@@ -120,7 +128,7 @@ io.on('connection', function (socket) {
             messages = [];
         }
     })
-    // on 'appointment' inserts appointment record, deletes the used time slots (takes in the appointment peramiters and an aaray of the slot ids) and then sends current: open slots and appointments
+    // on 'appointment' inserts appointment record, deletes the used time slots (takes in the appointment peramiters and an arZray of the slot ids) and then sends current: open slots and appointments
 
     socket.on('make appointment', async function (data) {
         const db = app.get('db'),
@@ -135,25 +143,32 @@ io.on('connection', function (socket) {
                 start_time,
                 end_time,
                 clean_time,
+                price_estimate,
                 timesToDelete } = data
-        const appointments = await db.create_appointment([client_name,
-            client_address,
-            client_phone,
-            client_email,
-            residential_sqft_carpet,
-            residential_sqft_grout,
-            residential_upholstery,
-            residential_extras,
-            start_time,
-            end_time,
-            clean_time])
-
-        await socket.emit('get appointments', appointments)
-        for (let i = 0; i < timesToDelete.length; i++) {
-            await db.delete_open_times(timesToDelete[i])
+        if (start_time) {
+            await db.create_appointment([client_name,
+                client_address,
+                client_phone,
+                client_email,
+                residential_sqft_carpet,
+                residential_sqft_grout,
+                residential_upholstery,
+                residential_extras,
+                start_time,
+                end_time,
+                clean_time,
+                price_estimate])
+            db.get_appointments()
+                .then( appointments => io.sockets.emit('get appointments', appointments))
+            for (let i = 0; i < timesToDelete.length; i++) {
+                await db.delete_open_times(timesToDelete[i])
+            }
+            db.get_open_times()
+                .then(times => io.sockets.emit('get open times', times))
+        } else {
+            const appointments = await db.get_appointments()
+            socket.emit('get appointments', appointments)
         }
-        db.get_open_times()
-        .then( times => io.sockets.emit('get open times', times))
 
     })
 
@@ -167,7 +182,8 @@ io.on('connection', function (socket) {
                 company_sqft_grout,
                 company_upholstery,
                 company_extras,
-                frequency } = data
+                frequency,
+                price_estimate } = data
         const commercialRequest = await db.create_commercial_request([company_name,
             client_phone,
             client_email,
@@ -177,7 +193,8 @@ io.on('connection', function (socket) {
             company_upholstery,
             company_extras,
             start_time,
-            frequency])
+            frequency,
+            price_estimate])
 
         await socket.emit('get commercial request', commercialRequest)
 
@@ -238,7 +255,7 @@ io.on('connection', function (socket) {
         }
 
         db.get_open_times()
-            .then( times => io.sockets.emit('get open times', times))
+            .then(times => io.sockets.emit('get open times', times))
 
     })
 

@@ -8,8 +8,6 @@ insert into client_appointments (client_name,
                 residential_extras,
                 start_time,
                 end_time,
-                clean_time)
-values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
-
-select *
-from client_appointments;
+                clean_time,
+                price_estimate)
+values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);

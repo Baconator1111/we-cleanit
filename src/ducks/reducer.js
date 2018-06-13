@@ -9,7 +9,9 @@ const initialState = {
     upholstery: [],
     otherServices: {},
     frequency: null,
-    timeToClean: 0
+    timeToClean: 0,
+    priceEstimate: 0,
+    adminUser: 'pending'
 }
 
 const UPDATE_CLIENT_TYPE = 'UPDATE_CLIENT_TYPE',
@@ -21,6 +23,8 @@ const UPDATE_CLIENT_TYPE = 'UPDATE_CLIENT_TYPE',
     UPDATE_OTHER_SERVICES = 'UPDATE_OTHER_SERVICES',
     UPDATE_FREQUENCY = 'UPDATE_FREQUENCY',
     UPDATE_TTC = 'UPDATE_TTC',
+    UPDATE_PRICE_ESTIMATE = 'UPDATE_PRICE_ESTIMATE',
+    UPDATE_ADMIN_USER = 'UPDATE_ADMIN_USER',
     CLEAR_STATE = 'CLEAR_STATE'
 
 module.exports = {
@@ -79,6 +83,18 @@ module.exports = {
             payload: timeToClean
         }
     },
+    updatePriceEstimate: function (priceEstimate) {
+        return {
+            type: UPDATE_PRICE_ESTIMATE,
+            payload: priceEstimate
+        }
+    },
+    updateAdminUser: function (adminUser) {
+        return {
+            type: UPDATE_ADMIN_USER,
+            payload: adminUser
+        }
+    },
     clearState: function () {
         return { type: CLEAR_STATE }
     },
@@ -113,6 +129,12 @@ module.exports = {
             case UPDATE_TTC:
                 return Object.assign({}, state, { timeToClean: action.payload })
 
+            case UPDATE_PRICE_ESTIMATE:
+                return Object.assign({}, state, { priceEstimate: action.payload })
+
+            case UPDATE_ADMIN_USER:
+                return Object.assign({}, state, { adminUser: action.payload })
+
             case CLEAR_STATE:
                 return Object.assign({}, state,
                     { floorSectionsCarpet: [] },
@@ -120,7 +142,9 @@ module.exports = {
                     { upholstery: [] },
                     { otherServices: {} },
                     { frequency: null },
-                    { timeToClean: 0 })
+                    { timeToClean: 0 },
+                    { adminUser: 'pending' },
+                    { priceEstimate: 0 })
 
             default:
                 return state;

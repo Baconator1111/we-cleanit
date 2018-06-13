@@ -1,11 +1,7 @@
 import React, { Component } from 'react'
-
 import { Link } from 'react-router-dom'
-
 import { socketConnect } from 'socket.io-react'
-
 import { connect } from 'react-redux'
-
 import BigCalendar from 'react-big-calendar'
 import moment from 'moment'
 
@@ -224,6 +220,8 @@ class ResidentialSchedular extends Component {
             })
         }
 
+        console.log(totalSqrFtCarpet, totalSqrFtGrout)
+
         await socket.emit('make appointment', {
             client_name: reduxState.contactInfo.clientName,
             client_address: reduxState.contactInfo.clientAddress + ', ' + reduxState.contactInfo.city,
@@ -236,6 +234,7 @@ class ResidentialSchedular extends Component {
             start_time: this.state.appointmentStartTime,
             end_time: this.state.appointmentEndTime,
             clean_time: reduxState.timeToClean,
+            price_estimate: reduxState.priceEstimate,
             timesToDelete: this.state.appointmentTimeSlots
         })
         this.props.clearState()
