@@ -3,6 +3,10 @@ import { socketConnect } from 'socket.io-react'
 import BigCalendar from 'react-big-calendar'
 import moment from 'moment'
 
+import { connect } from 'react-redux'
+
+import { Redirect } from 'react-router'
+
 import './manageOpenTimes.css'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 
@@ -78,24 +82,34 @@ class ManageOpenTimes extends Component {
 
     render() {
         BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment))
-        return (
-            <div>
-                <div className='calendar' >
-                    <BigCalendar
-                        events={this.state.events}
-                        views={["month"]}
-                        step={60}
-                        defaultDate={new Date()}
-                    />
+        if (this.props.adminUser === 'pending') {
+            return <Redirect push to='/admin/dash' />
+        } else if (this.props.adminUser) {
+            return (
+                <div>
+                    <div className='calendar' >
+                        <BigCalendar
+                            events={this.state.events}
+                            views={["month"]}
+                            step={60}
+                            defaultDate={new Date()}
+                        />
+                    </div>
+                    Start Date<input type="date" onChange={e => this.handleInput('startDate', e.target.value)} />
+                    End Date<input type="date" onChange={e => this.handleInput('endDate', e.target.value)} />
+                    Start Time<input type="time" onChange={e => this.handleInput('startTime', e.target.value)} />
+                    End Time<input type="time" onChange={e => this.handleInput('endTime', e.target.value)} />
+                    <button onClick={() => this.handleAddTimes()} >Add New Times</button>
                 </div>
-                Start Date<input type="date" onChange={e => this.handleInput('startDate', e.target.value)} />
-                End Date<input type="date" onChange={e => this.handleInput('endDate', e.target.value)} />
-                Start Time<input type="time" onChange={e => this.handleInput('startTime', e.target.value)} />
-                End Time<input type="time" onChange={e => this.handleInput('endTime', e.target.value)} />
-                <button onClick={() => this.handleAddTimes()} >Add New Times</button>
-            </div>
-        )
+            )
+        }
     }
 }
 
-export default socketConnect(ManageOpenTimes)
+function mapStateToProps(state) {
+    return {
+        adminUser: state.adminUser,
+    }
+}
+
+export default socketConnect(connect(mapStateToProps, null)(ManageOpenTimes))

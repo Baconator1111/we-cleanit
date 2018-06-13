@@ -20,6 +20,8 @@ store.subscribe(() => {
     upholstery: store.getState().upholstery,
     otherServices: store.getState().otherServices,
     frequency: store.getState().frequency,
-    timeToClean: store.getState().timeToClean
+    timeToClean: store.getState().timeToClean,
+    priceEstimate: store.getState().priceEstimate,
+    adminUser: store.getState().adminUser
   })
 })

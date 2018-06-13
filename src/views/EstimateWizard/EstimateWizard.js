@@ -6,7 +6,7 @@ import { Redirect } from 'react-router'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-import { getServices, updateTTC } from '../../ducks/reducer'
+import { getServices, updateTTC, updatePriceEstimate } from '../../ducks/reducer'
 
 import ExpandableBox from './../../components/ExpandableBox/ExpandableBox'
 
@@ -56,7 +56,7 @@ class EstimateWizard extends Component {
     //     return (this === null ? null : this.calculateRunningTotal())
     // }
 
-    calculateRunningTotal() {
+    async calculateRunningTotal() {
         let runningTotal = 0
         let timeToClean = 0
 
@@ -78,17 +78,23 @@ class EstimateWizard extends Component {
         timeToClean += totalFootage * this.state.floorTime / 60000
 
         // add upholstery pieces
+
+        console.log(this.props.upholstery)
+
         this.props.upholstery.forEach(upholstery => {
             runningTotal += upholstery.upholstery_price
             timeToClean += upholstery.upholstery_ttc
         })
 
-        this.setState({
+        console.log( 'running total', runningTotal, 'ttc', timeToClean)
+
+        await this.setState({
             runningTotal: runningTotal,
             timeToClean: timeToClean
         })
 
-        this.props.updateTTC(this.state.timeToClean)
+        await this.props.updateTTC(this.state.timeToClean)
+        await this.props.updatePriceEstimate(this.state.runningTotal)
     }
 
     checkInfo() {
@@ -108,7 +114,7 @@ class EstimateWizard extends Component {
     render() {
 
         if (this.state.redirect) {
-            return <Redirect push to='/residential-appointment-scheduling' />;
+            return <Redirect push to='/residential-appointment-scheduling' />
         }
 
         return (
@@ -142,4 +148,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps, { getServices, updateTTC })(EstimateWizard)
+export default connect(mapStateToProps, { getServices, updateTTC, updatePriceEstimate })(EstimateWizard)

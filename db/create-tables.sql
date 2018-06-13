@@ -22,8 +22,9 @@ create table client_appointments (
     start_time text,
     end_time text,
     clean_time int,
-    residential_confirmed text,
-    residential_contacted text
+    price_estimate int,
+    residential_confirmed text default false,
+    residential_contacted text default false
 );
 
 create table commercial (
@@ -35,8 +36,9 @@ create table commercial (
     company_upholstery text,
     company_extras text,
     frequency text,
-    company_confirmed text,
-    company_contacted text
+    price_estimate int,    
+    company_confirmed text default false,
+    company_contacted text default false
 );
 
 create table services (
