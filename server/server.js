@@ -10,6 +10,7 @@ const express = require('express'),
     bodyparser = require('body-parser'),
     initializeCtrl = require('./controllers/initializeCtrl'),
     servicesCtrl = require('./controllers/servicesCtrl'),
+    adminClientsCtrl = require('./controllers/adminClientsCtrl'),
     app = express(),
     { SERVER_PORT, SESSION_SECRET, DOMAIN, CLIENT_ID, CLIENT_SECRET, CALLBACK_URL, DB_CONNECTION, LOGIN, LOGOUT } = process.env
 
@@ -80,7 +81,7 @@ app.get('/api/user', (req, res, next) => {
     if (req.user) {
         const user = req.user.user_id
         res.status(200).send(user.toString())
-    } else { 
+    } else {
         res.status(200).send(false)
     }
 })
@@ -103,6 +104,11 @@ app.post('/api/admin/services/extras', servicesCtrl.addExtraServices)
 app.delete('/api/admin/services/extras/:extra_id', servicesCtrl.deleteExtraServices)
 
 app.post('/api/admin/services/promotion', servicesCtrl.addPromotion)
+
+app.put('/api/admin/contacted/residential', adminClientsCtrl.updateResidentialContacted)
+app.put('/api/admin/confirmed/residential', adminClientsCtrl.updateResidentialConfirmed)
+app.put('/api/admin/contacted/commercial', adminClientsCtrl.updateCommericalContacted)
+app.put('/api/admin/confirmed/commercial', adminClientsCtrl.updateCommercialConfirmed)
 
 // Socket connections
 let connections = []
@@ -159,7 +165,7 @@ io.on('connection', function (socket) {
                 clean_time,
                 price_estimate])
             db.get_appointments()
-                .then( appointments => io.sockets.emit('get appointments', appointments))
+                .then(appointments => io.sockets.emit('get appointments', appointments))
             for (let i = 0; i < timesToDelete.length; i++) {
                 await db.delete_open_times(timesToDelete[i])
             }
@@ -169,35 +175,32 @@ io.on('connection', function (socket) {
             const appointments = await db.get_appointments()
             socket.emit('get appointments', appointments)
         }
-
     })
 
     socket.on('make commercial request', async function (data) {
         const db = app.get('db'),
             { company_name,
-                client_phone,
-                client_email,
                 company_address,
+                company_phone,
+                company_email,
                 company_sqft_carpet,
                 company_sqft_grout,
                 company_upholstery,
-                company_extras,
                 frequency,
                 price_estimate } = data
-        const commercialRequest = await db.create_commercial_request([company_name,
-            client_phone,
-            client_email,
-            company_address,
-            company_sqft_carpet,
-            company_sqft_grout,
-            company_upholstery,
-            company_extras,
-            start_time,
-            frequency,
-            price_estimate])
-
-        await socket.emit('get commercial request', commercialRequest)
-
+        if (company_name) {
+            await db.create_commercial_request([company_name,
+                company_address,
+                company_phone,
+                company_email,
+                company_sqft_carpet,
+                company_sqft_grout,
+                company_upholstery,
+                frequency,
+                price_estimate])
+        }
+        db.get_commercial_requests()
+            .then(commercialRequest => io.sockets.emit('get commercial request', commercialRequest))
     })
 
     // on 'open slots' inserts open slots record and sends current: open slots and appointments

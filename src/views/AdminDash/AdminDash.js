@@ -42,6 +42,7 @@ class AdminDash extends Component {
                     <Link to='/admin/manage-services' ><button>Manage Services</button></Link>
                     <Link to='/admin/manage-open-times' ><button>Manage Open Times</button></Link>
                     <Link to='/admin/manage-appointments' ><button>Manage Residential Appointments</button></Link>
+                    <Link to='/admin/manage-commercial' ><button>Manage Commercial Requests</button></Link>
                 </div>
             )
         }
