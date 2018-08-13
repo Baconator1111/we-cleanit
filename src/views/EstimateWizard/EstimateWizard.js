@@ -65,14 +65,16 @@ class EstimateWizard extends Component {
         // calculate Carpet and Grout prices
         let totalSqrFtCarpet = 0
         let totalSqrFtGrout = 0
-
-        this.props.state.floorSectionsCarpet.forEach(section => {
-            totalSqrFtCarpet += section.length * section.width
-        })
-
-        this.props.state.floorSectionsGrout.forEach(section => {
-            totalSqrFtGrout += section.length * section.width
-        })
+        if(this.props.state.floorSectionsCarpet){
+            this.props.state.floorSectionsCarpet.forEach(section => {
+                totalSqrFtCarpet += section.length * section.width
+            })
+        }
+        if(this.props.state.floorSectionsGrout){
+            this.props.state.floorSectionsGrout.forEach(section => {
+                totalSqrFtGrout += section.length * section.width
+            })
+        }
         runningTotal += totalSqrFtCarpet * this.state.carpetPrice / 100
         runningTotal += totalSqrFtGrout * this.state.groutPrice / 100
 
@@ -83,10 +85,12 @@ class EstimateWizard extends Component {
 
         console.log(this.props.state.upholstery)
 
-        this.props.state.upholstery.forEach(upholstery => {
-            runningTotal += upholstery.upholstery_price
-            timeToClean += upholstery.upholstery_ttc
-        })
+        if(this.props.state.upholstery){
+            this.props.state.upholstery.forEach(upholstery => {
+                runningTotal += upholstery.upholstery_price
+                timeToClean += upholstery.upholstery_ttc
+            })
+        }
 
         console.log('running total', runningTotal, 'ttc', timeToClean)
 
